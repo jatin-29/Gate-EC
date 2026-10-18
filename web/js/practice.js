@@ -118,7 +118,7 @@ export function mountPractice(root, D, params) {
     const cur = list[idx];
     const copy = { ...f, id: cur ? cur.id : "" };
     history.replaceState(null, "", `#/${branch}/practice?${serialize(copy)}`);
-    if (cur) store.setLastVisit({ href: location.hash, label: `${cur.paper.title} · ${cur.ref}`, branch });
+    if (cur) store.setLastVisit({ href: location.hash, label: `${cur.paper.title} · ${cur.ref}`, branch, subject: cur.s });
     window.dispatchEvent(new Event("gate:url")); // lets the header's branch switcher follow the filters
   }
 
@@ -253,6 +253,7 @@ export function mountPractice(root, D, params) {
       <div class="crumb" style="margin:-8px 0 14px">
         <a href="#/${branch}/practice?s=${s.id}"><b>${esc(s.name)}</b></a> ›
         <a href="#/${branch}/practice?tp=${esc(q.tk)}">${esc(t.name)}</a>
+        · <a href="#/${branch}/weightage?s=${s.id}">📊 Weightage</a>
       </div>
       <div class="q-body" id="qbody">${q.q}</div>
       ${opts}

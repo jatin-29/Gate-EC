@@ -36,7 +36,8 @@ function refreshSwitcher() {
   if (!branch) { seg.hidden = true; return; }
   const params = new URLSearchParams(location.hash.split("?")[1] || "");
   const f = view === "practice" ? parseFilters(params) : null;
-  const subjects = new Set(f ? [...f.subjects, ...[...f.topics].map((k) => k.split("/")[0])] : []);
+  const wsub = view === "weightage" ? params.get("s") : null;
+  const subjects = new Set(f ? [...f.subjects, ...[...f.topics].map((k) => k.split("/")[0])] : wsub ? [wsub] : []);
   const items = [];
   for (const b of BRANCHES) {
     const D = loaded[b];
@@ -46,6 +47,8 @@ function refreshSwitcher() {
       const g = { ...f, subjects: new Set(f.subjects), topics: new Set(), id: "" };
       for (const k of f.topics) D.topicOf.has(k) ? g.topics.add(k) : g.subjects.add(k.split("/")[0]);
       href = `#/${b}/practice?${serialize(g)}`;
+    } else if (wsub && b !== branch) {
+      href = `#/${b}/weightage?${new URLSearchParams([...params].filter(([k]) => k !== "id"))}`;
     } else if (f && b === branch) href = location.hash;
     items.push(`<a href="${href}" class="${b === branch ? "on" : ""}">${b.toUpperCase()}</a>`);
   }
@@ -59,7 +62,10 @@ function chrome(branch, view) {
   current = { branch, view };
   refreshSwitcher();
   const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["analytics", "Progress", "/analytics"]];
-  nav.innerHTML = branch ? items.map(([v, l, p]) => `<a href="#/${branch}${p}" class="${v === view ? "on" : ""}">${l}</a>`).join("") : "";
+  // the Weightage tab opens the subject you were last practising
+  const lv = store.lastVisit();
+  const ws = branch && lv && lv.branch === branch && lv.subject ? `?s=${lv.subject}` : "";
+  nav.innerHTML = branch ? items.map(([v, l, p]) => `<a href="#/${branch}${p}${v === "weightage" ? ws : ""}" class="${v === view ? "on" : ""}">${l}</a>`).join("") : "";
 }
 
 const skeleton = () => `<div class="skel"><i style="width:40%;height:28px"></i><i style="width:65%"></i><div class="skel-grid"><i></i><i></i><i></i></div></div>`;

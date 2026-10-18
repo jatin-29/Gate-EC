@@ -422,3 +422,18 @@ table.heat { border-collapse: separate; border-spacing: 0; font-size: 13px; widt
 }
 @media (prefers-reduced-motion: reduce) { .blob, .q-card, .verdict, .skel i { animation: none !important; } }
 [hidden] { display: none !important; }
+
+/* ---------- subject weightage ---------- */
+.subj-chips { margin-bottom: 14px; }
+.subj-chips .chip { text-decoration: none; }
+.dot2 { width: 9px; height: 9px; border-radius: 3px; background: var(--accent); display: inline-block; }
+.subj-chips .chip[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--text); }
+.toolbar .seg a { padding: 5px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; color: var(--muted); }
+.toolbar .seg a.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.insight { padding: 12px 16px; margin-bottom: 14px; }
+.heat .tot.share { position: relative; min-width: 76px; }
+.heat .share span { position: relative; z-index: 1; font-size: 12px; }
+.heat .share i { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--primary); opacity: 0.7; }
+.heat .tl a { color: var(--text); }
+.heat { font-variant-numeric: tabular-nums; }
+.heat tfoot td, .heat tfoot th { position: sticky; bottom: 0; z-index: 3; border-top: 2px solid var(--border); }

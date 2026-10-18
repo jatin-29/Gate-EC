@@ -122,71 +122,73 @@ function wireTopicSearch(root) {
   });
 }
 
-// ---------- topic × year weightage ----------
+// ---------- topic × year weightage (one subject at a time) ----------
 export function weightage(root, D, params) {
-  let mode = params.get("by") === "marks" ? "marks" : "count";
   const b = D.branch;
-  const years = D.years;
-  function render() {
-    // several sets in one year (2014-2017) are averaged so a year always reads as "one paper"
-    const sets = new Map();
-    for (const pp of D.papers) if (pp.kind === "paper") sets.set(pp.year, (sets.get(pp.year) || 0) + 1);
-    const val = (q) => (mode === "marks" ? q.m : 1) / (sets.get(q.year) || 1);
-    const cell = new Map(); // topicKey|year -> value
-    const tot = new Map();
-    const subTot = new Map(), subYear = new Map();
-    const yearTot = new Map();
-    for (const q of D.official) {
-      const v = val(q);
-      const k = `${q.tk}|${q.year}`;
-      cell.set(k, (cell.get(k) || 0) + v);
-      tot.set(q.tk, (tot.get(q.tk) || 0) + v);
-      subTot.set(q.s, (subTot.get(q.s) || 0) + v);
-      const sk = `${q.s}|${q.year}`;
-      subYear.set(sk, (subYear.get(sk) || 0) + v);
-      yearTot.set(q.year, (yearTot.get(q.year) || 0) + v);
-    }
-    const max = Math.max(...cell.values());
-    const fmt = (v) => (v ? String(Math.round(v * 10) / 10) : "");
-    const shade = (v) => (v ? `background:color-mix(in srgb, var(--primary) ${Math.round(14 + 70 * (v / max))}%, var(--surface));${v / max > 0.55 ? "color:var(--primary-ink);font-weight:700" : ""}` : "");
-    const head = years.map((y) => `<th>${String(y).slice(2)}</th>`).join("");
-    const recent = years.slice(0, 10);
-    const rows = D.subjects
-      .map((s) => {
-        const sRow = `<tr class="sh"><th class="tl" style="border-left:4px solid ${s.color}"><a href="#/${b}/practice?s=${s.id}" style="color:inherit">${esc(s.name)}</a></th>${years
-          .map((y) => `<td class="c">${fmt(subYear.get(`${s.id}|${y}`))}</td>`)
-          .join("")}<td class="tot">${fmt(subTot.get(s.id)) || 0}</td></tr>`;
-        const tRows = s.topics
-          .filter((t) => tot.get(`${s.id}/${t.id}`))
-          .map((t) => {
-            const k = `${s.id}/${t.id}`;
-            return `<tr><th class="tl"><a href="#/${b}/practice?tp=${encodeURIComponent(k)}" style="color:var(--text)">${esc(t.name)}</a></th>${years
-              .map((y) => {
-                const v = cell.get(`${k}|${y}`) || 0;
-                return `<td class="c" style="${shade(v)}">${v ? `<a href="#/${b}/practice?tp=${encodeURIComponent(k)}&y=${y}">${fmt(v)}</a>` : ""}</td>`;
-              })
-              .join("")}<td class="tot">${fmt(tot.get(k))}</td></tr>`;
-          })
-          .join("");
-        return sRow + tRows;
-      })
-      .join("");
-    $("#heat", root).innerHTML = `<table class="heat"><thead><tr><th class="tl">Topic</th>${head}<th class="tot" title="Sum across years">Σ</th></tr></thead><tbody>${rows}</tbody>
-      <tfoot><tr class="sh"><th class="tl">All subjects</th>${years.map((y) => `<td class="c">${fmt(yearTot.get(y))}</td>`).join("")}<td class="tot">${fmt([...yearTot.values()].reduce((a, c) => a + c, 0))}</td></tr></tfoot></table>`;
+  const last = store.lastVisit();
+  const wanted = params.get("s") || (last && last.branch === b && last.subject) || "";
+  const subject = D.subjectById.has(wanted) ? D.subjectById.get(wanted) : D.subjects[0];
+  const mode = params.get("by") === "marks" ? "marks" : "count";
+  const span = params.get("yrs") || "10";           // "10" | "20" | "all"
+  const sort = params.get("sort") === "total" ? "total" : "syllabus";
+  const href = (over = {}) => {
+    const q = new URLSearchParams({ s: subject.id, ...(mode === "marks" ? { by: "marks" } : {}), ...(span !== "10" ? { yrs: span } : {}), ...(sort === "total" ? { sort } : {}) });
+    for (const [k, v] of Object.entries(over)) v === null ? q.delete(k) : q.set(k, v);
+    return `#/${b}/weightage?${q}`;
+  };
+  const years = span === "all" ? D.years : D.years.slice(0, +span);
+  const val = (q) => (mode === "marks" ? q.m : 1);
+  const unit = mode === "marks" ? "marks" : "questions";
+
+  const qs = D.official.filter((q) => q.s === subject.id);
+  const cell = new Map(), tot = new Map(), recent = new Map(), lastYear = new Map();
+  const yearTot = new Map();
+  for (const q of qs) {
+    const v = val(q);
+    cell.set(`${q.tk}|${q.year}`, (cell.get(`${q.tk}|${q.year}`) || 0) + v);
+    yearTot.set(q.year, (yearTot.get(q.year) || 0) + v);
+    if (years.includes(q.year)) tot.set(q.tk, (tot.get(q.tk) || 0) + v);
+    lastYear.set(q.tk, Math.max(lastYear.get(q.tk) || 0, q.year));
   }
+  const grand = [...tot.values()].reduce((a, c) => a + c, 0);
+  let topics = subject.topics.filter((t) => lastYear.has(`${subject.id}/${t.id}`)).map((t) => ({ ...t, key: `${subject.id}/${t.id}` }));
+  if (sort === "total") topics.sort((x, y) => (tot.get(y.key) || 0) - (tot.get(x.key) || 0));
+  const max = Math.max(1, ...cell.values());
+  const fmt = (v) => (v ? String(Math.round(v * 10) / 10) : "");
+  const shade = (v) => (v ? `background:color-mix(in srgb, ${subject.color} ${Math.round(14 + 72 * (v / max))}%, var(--surface));${v / max > 0.6 ? "color:#fff;font-weight:700" : ""}` : "");
+  const top = [...topics].sort((x, y) => (tot.get(y.key) || 0) - (tot.get(x.key) || 0)).slice(0, 3).filter((t) => tot.get(t.key));
+  const nYears = years.length;
+
+  const rows = topics
+    .map((t) => {
+      const total = tot.get(t.key) || 0;
+      const cells = years
+        .map((y) => {
+          const v = cell.get(`${t.key}|${y}`) || 0;
+          return `<td class="c" style="${shade(v)}">${v ? `<a href="#/${b}/practice?tp=${encodeURIComponent(t.key)}&y=${y}" title="${t.name} · ${y}">${fmt(v)}</a>` : ""}</td>`;
+        })
+        .join("");
+      return `<tr><th class="tl"><a href="#/${b}/practice?tp=${encodeURIComponent(t.key)}">${esc(t.name)}</a></th>${cells}
+        <td class="tot">${fmt(total)}</td><td class="tot">${fmt(total / nYears)}</td>
+        <td class="tot share"><span>${pct(total, grand)}%</span><i style="width:${pct(total, grand)}%"></i></td><td class="tot">${lastYear.get(t.key)}</td></tr>`;
+    })
+    .join("");
+  const foot = `<tr class="sh"><th class="tl">All ${esc(subject.name)} topics</th>${years.map((y) => `<td class="c">${fmt(yearTot.get(y))}</td>`).join("")}<td class="tot">${fmt(grand)}</td><td class="tot">${fmt(grand / nYears)}</td><td class="tot">100%</td><td class="tot"></td></tr>`;
+
   root.innerHTML = `
-    <h1 class="page-title">Topic weightage · GATE ${b.toUpperCase()}</h1>
-    <p class="page-sub">How many ${mode === "marks" ? "marks" : "questions"} each topic carried in every paper (columns are years; years with several sets (2014–2017) show the average per set). Click a cell to practise exactly those questions.</p>
-    <div class="toolbar"><div class="seg" id="mode"><button data-m="count" class="${mode === "count" ? "on" : ""}">Questions</button><button data-m="marks" class="${mode === "marks" ? "on" : ""}">Marks</button></div></div>
-    <div class="card heat-wrap" id="heat"></div>`;
-  $("#mode", root).addEventListener("click", (e) => {
-    const m = e.target.dataset.m;
-    if (!m) return;
-    mode = m;
-    $$("#mode button", root).forEach((x) => x.classList.toggle("on", x.dataset.m === m));
-    render();
-  });
-  render();
+    <h1 class="page-title">Topic weightage · ${esc(subject.name)}</h1>
+    <p class="page-sub">How many ${unit} each ${esc(subject.name)} topic carried in GATE ${b.toUpperCase()} each year. Click a cell to practise those questions, or a topic name for all of its questions.</p>
+    <div class="chips subj-chips">${D.subjects.map((x) => `<a class="chip" aria-pressed="${x.id === subject.id}" style="--accent:${x.color}" href="${href({ s: x.id })}"><span class="dot2"></span>${esc(x.name)}</a>`).join("")}</div>
+    <div class="toolbar">
+      <div class="seg"><a class="${mode === "count" ? "on" : ""}" href="${href({ by: null })}">Questions</a><a class="${mode === "marks" ? "on" : ""}" href="${href({ by: "marks" })}">Marks</a></div>
+      <div class="seg"><a class="${span === "10" ? "on" : ""}" href="${href({ yrs: null })}">Last 10 yrs</a><a class="${span === "20" ? "on" : ""}" href="${href({ yrs: "20" })}">Last 20</a><a class="${span === "all" ? "on" : ""}" href="${href({ yrs: "all" })}">All years</a></div>
+      <div class="seg"><a class="${sort === "syllabus" ? "on" : ""}" href="${href({ sort: null })}">Syllabus order</a><a class="${sort === "total" ? "on" : ""}" href="${href({ sort: "total" })}">Most asked first</a></div>
+      <a class="btn" href="#/${b}/practice?s=${subject.id}">Practise ${esc(subject.name)} →</a>
+    </div>
+    ${top.length ? `<div class="insight card"><b>Most asked in the last ${nYears} years:</b> ${top.map((t) => `<a href="#/${b}/practice?tp=${encodeURIComponent(t.key)}">${esc(t.name)}</a> <span class="muted">(${fmt(tot.get(t.key))} ${unit}, ${pct(tot.get(t.key), grand)}%)</span>`).join(" · ")}</div>` : ""}
+    <div class="card heat-wrap"><table class="heat"><thead><tr><th class="tl">Topic</th>${years.map((y) => `<th title="GATE ${y}">${String(y).slice(2)}</th>`).join("")}<th class="tot">Total</th><th class="tot" title="Average per year over the years shown">Avg/yr</th><th class="tot">Share</th><th class="tot" title="Most recent year it appeared">Last</th></tr></thead>
+    <tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>
+    <p class="hint" style="margin-top:10px">Column headings are years (e.g. 24 = GATE 2024). Total, average and share cover only the years shown.</p>`;
 }
 
 // ---------- analytics ----------
