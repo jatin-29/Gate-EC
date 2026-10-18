@@ -11,6 +11,7 @@ and writes compact per-branch files the web app loads:
 import hashlib
 import json
 import pathlib
+import re
 import shutil
 import sys
 import time
@@ -91,6 +92,10 @@ def main():
     version = hashlib.sha1(str(time.time()).encode()).hexdigest()[:8]
     for page in DIST.glob("*.html"):
         page.write_text(page.read_text().replace("__BUILD__", version))
+    # Version every module import too. GitHub Pages lets browsers cache files for ~10 minutes, and a
+    # new app.js importing a stale cached practice.js fails to load at all.
+    for js in (DIST / "js").glob("*.js"):
+        js.write_text(re.sub(r'(from "\./[\w-]+\.js)"', rf'\1?v={version}"', js.read_text()))
     print(f"built dist/ ({total} questions, build {version})")
 
 

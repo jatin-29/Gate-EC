@@ -33,6 +33,15 @@
     </div>
   </header>
   <main id="app"><div class="empty">Loading…</div></main>
+  <script>
+    // If the app fails to start (blocked script, stale cache, old browser) say so instead of hanging on "Loading…".
+    function gateFatal(msg) {
+      var app = document.getElementById("app");
+      if (app && /Loading/.test(app.textContent)) app.innerHTML = '<div class="empty"><h3>The app could not start</h3><p>' + msg + '</p><p><button class="btn" onclick="location.reload()">Reload</button></p></div>';
+    }
+    addEventListener("error", function (e) { gateFatal(String(e.message || "script error").replace(/</g, "&lt;")); });
+    setTimeout(function () { gateFatal("It is taking too long to load. Check your connection, then reload; if it keeps happening, clear this site's data and try again."); }, 20000);
+  </script>
   <noscript><p style="padding:24px">This site needs JavaScript.</p></noscript>
   <script type="module" src="js/app.js?v=__BUILD__"></script>
 </body>
