@@ -24,7 +24,7 @@ export function parseFilters(params) {
   };
 }
 
-function serialize(f) {
+export function serialize(f) {
   const p = new URLSearchParams();
   if (f.q) p.set("q", f.q);
   if (f.subjects.size) p.set("s", [...f.subjects].join(","));
@@ -117,6 +117,7 @@ export function mountPractice(root, D, params) {
     const cur = list[idx];
     const copy = { ...f, id: cur ? cur.id : "" };
     history.replaceState(null, "", `#/${branch}/practice?${serialize(copy)}`);
+    window.dispatchEvent(new Event("gate:url")); // lets the header's branch switcher follow the filters
   }
 
   // ---------- filter panel ----------

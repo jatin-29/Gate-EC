@@ -1,7 +1,7 @@
 import { $, $$, icons } from "./util.js";
 import * as store from "./store.js";
 import { loadBranch } from "./data.js";
-import { mountPractice } from "./practice.js";
+import { mountPractice, parseFilters, serialize } from "./practice.js";
 import { landing, branchHome, weightage, analytics, settingsView } from "./views.js";
 import { mountCalculator } from "./calc.js";
 
@@ -26,9 +26,38 @@ themeBtn.onclick = () => {
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
 $("#settings-link").innerHTML = icons.gear;
 
+const loaded = {};
+let current = { branch: null, view: null };
+
+// The EC/EE/IN switcher keeps what you are studying: on the practice page it links to the same
+// subject (and topic when the other branch has it) and hides branches that lack the subject.
+function refreshSwitcher() {
+  const { branch, view } = current;
+  if (!branch) { seg.hidden = true; return; }
+  const params = new URLSearchParams(location.hash.split("?")[1] || "");
+  const f = view === "practice" ? parseFilters(params) : null;
+  const subjects = new Set(f ? [...f.subjects, ...[...f.topics].map((k) => k.split("/")[0])] : []);
+  const items = [];
+  for (const b of BRANCHES) {
+    const D = loaded[b];
+    if (b !== branch && D && [...subjects].some((s) => !D.subjectById.has(s))) continue;
+    let href = `#/${b}${view && view !== "home" ? "/" + view : ""}`;
+    if (f && b !== branch && D) {
+      const g = { ...f, subjects: new Set(f.subjects), topics: new Set(), id: "" };
+      for (const k of f.topics) D.topicOf.has(k) ? g.topics.add(k) : g.subjects.add(k.split("/")[0]);
+      href = `#/${b}/practice?${serialize(g)}`;
+    } else if (f && b === branch) href = location.hash;
+    items.push(`<a href="${href}" class="${b === branch ? "on" : ""}">${b.toUpperCase()}</a>`);
+  }
+  seg.innerHTML = items.join("");
+  seg.hidden = items.length < 2;
+}
+BRANCHES.forEach((b) => loadBranch(b).then((D) => { loaded[b] = D; refreshSwitcher(); }).catch(() => {}));
+addEventListener("gate:url", refreshSwitcher);
+
 function chrome(branch, view) {
-  seg.innerHTML = BRANCHES.map((b) => `<a href="#/${b}${view && view !== "home" ? "/" + view : ""}" class="${b === branch ? "on" : ""}">${b.toUpperCase()}</a>`).join("");
-  seg.hidden = !branch;
+  current = { branch, view };
+  refreshSwitcher();
   const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["analytics", "Progress", "/analytics"]];
   nav.innerHTML = branch ? items.map(([v, l, p]) => `<a href="#/${branch}${p}" class="${v === view ? "on" : ""}">${l}</a>`).join("") : "";
 }
