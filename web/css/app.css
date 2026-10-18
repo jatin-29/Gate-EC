@@ -363,3 +363,13 @@ table.heat { border-collapse: separate; border-spacing: 0; font-size: 13px; widt
 @keyframes sa-cross { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(108px); } }
 @keyframes sa-cross2 { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-108px); } }
 @media (prefers-reduced-motion: reduce) { .subject-art * { animation: none !important; } .subject-art .arc { opacity: 0.6; } }
+
+/* ---------- note photos ---------- */
+.photo-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
+.photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; }
+.photo { position: relative; margin: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; }
+.photo img { display: block; width: 100%; height: 120px; object-fit: contain; cursor: zoom-in; padding: 0; margin: 0; border-radius: 0; }
+.photo-del { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%; border: 0; background: rgb(0 0 0 / 65%); color: #fff; font-size: 16px; line-height: 1; padding: 0; }
+.photo-del:hover { background: var(--bad); }
+.lightbox { position: fixed; inset: 0; z-index: 200; background: rgb(0 0 0 / 82%); display: grid; place-items: center; padding: 16px; cursor: zoom-out; }
+.lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; background: #fff; }

@@ -1,5 +1,6 @@
 import { esc, $, $$, typeset, toast } from "./util.js";
 import * as store from "./store.js";
+import * as photos from "./photos.js";
 import { loadExplanations, checkAnswer, answerText } from "./data.js";
 
 const STATUSES = [["all", "All"], ["unattempted", "Unattempted"], ["correct", "Correct"], ["incorrect", "Incorrect"], ["bookmarked", "Bookmarked"], ["noted", "With notes"]];
@@ -88,7 +89,7 @@ export function mountPractice(root, D, params) {
     if (f.q && !f.q.toLowerCase().split(/\s+/).every((w) => q.hay.includes(w))) return false;
     if (f.status !== "all") {
       const st = store.statusOf(q.id);
-      if (f.status === "bookmarked" ? !store.isBookmarked(q.id) : f.status === "noted" ? !store.noteOf(q.id) : st !== f.status) return false;
+      if (f.status === "bookmarked" ? !store.isBookmarked(q.id) : f.status === "noted" ? !(store.noteOf(q.id) || photos.has(q.id)) : st !== f.status) return false;
     }
     return true;
   }
@@ -257,11 +258,19 @@ export function mountPractice(root, D, params) {
         ${done ? `<button class="btn" data-act="retry">Try again</button>` : ""}
         ${locked && !done ? `<button class="btn" data-act="retry">Hide answer</button>` : ""}
         <button class="btn bm ${bm ? "on" : ""}" data-act="bookmark">${bm ? "★ Bookmarked" : "☆ Bookmark"}</button>
-        <button class="btn" data-act="notes">✎ Notes${store.noteOf(q.id) ? " •" : ""}</button>
+        <button class="btn" data-act="notes" id="notes-btn">✎ Notes${store.noteOf(q.id) || photos.has(q.id) ? " •" : ""}</button>
       </div>
       ${verdict}
       <div id="exp"></div>
-      <div class="notes" id="notes" hidden><textarea placeholder="Your notes for this question (saved on this device)…">${esc(store.noteOf(q.id))}</textarea></div>
+      <div class="notes" id="notes" hidden>
+        <textarea placeholder="Your notes for this question (saved on this device)…">${esc(store.noteOf(q.id))}</textarea>
+        <div class="photo-bar">
+          <button class="btn" data-act="add-photo">📷 Add photo / screenshot</button>
+          <input type="file" id="photo-file" accept="image/*" multiple hidden>
+          <span class="hint">Or paste a screenshot (Ctrl/Cmd+V) or drop an image here. Kept on this device.</span>
+        </div>
+        <div class="photos" id="photos"></div>
+      </div>
       <div class="nav-row">
         <button class="btn" data-act="prev" ${idx === 0 ? "disabled" : ""}>← Previous</button>
         <span class="pos">${idx + 1} / ${list.length}</span>
@@ -269,7 +278,54 @@ export function mountPractice(root, D, params) {
       </div>`;
     typeset(el);
     if (locked) showExplanation(q);
-    if (store.noteOf(q.id)) $("#notes", el).hidden = false;
+    if (store.noteOf(q.id) || photos.has(q.id)) { $("#notes", el).hidden = false; renderPhotos(); }
+  }
+
+  // ---------- photos attached to notes ----------
+  let photoUrls = [];
+  async function renderPhotos() {
+    const q = list[idx], box = $("#photos", root);
+    if (!q || !box) return;
+    photoUrls.forEach(URL.revokeObjectURL);
+    photoUrls = [];
+    try {
+      const rows = await photos.list(q.id);
+      if (list[idx] !== q || !box.isConnected) return;
+      box.innerHTML = rows
+        .map((r) => {
+          const url = URL.createObjectURL(r.blob);
+          photoUrls.push(url);
+          return `<figure class="photo"><img src="${url}" alt="Your saved photo" data-photo="${url}"><button class="photo-del" data-del-photo="${r.id}" title="Delete photo" aria-label="Delete photo">×</button></figure>`;
+        })
+        .join("");
+    } catch { /* storage unavailable */ }
+    const btn = $("#notes-btn", root);
+    if (btn) btn.textContent = `✎ Notes${store.noteOf(q.id) || photos.has(q.id) ? " •" : ""}`;
+  }
+
+  async function addPhotos(files) {
+    const q = list[idx];
+    if (!q || !files.length) return;
+    try {
+      const n = await photos.add(q.id, files);
+      $("#notes", root).hidden = false;
+      toast(n > 1 ? `${n} photos saved` : "Photo saved");
+      renderPhotos();
+      renderFilters();
+    } catch (err) {
+      toast(err.message || "Could not save the photo");
+    }
+  }
+
+  function lightbox(src) {
+    const o = document.createElement("div");
+    o.className = "lightbox";
+    o.innerHTML = `<img src="${src}" alt="Saved photo">`;
+    const close = () => { o.remove(); document.removeEventListener("keydown", esc2, true); };
+    const esc2 = (e) => { if (e.key === "Escape") { e.stopPropagation(); close(); } };
+    o.onclick = close;
+    document.addEventListener("keydown", esc2, true);
+    document.body.append(o);
   }
 
   async function showExplanation(q) {
@@ -317,9 +373,15 @@ export function mountPractice(root, D, params) {
   }
 
   root.addEventListener("click", (e) => {
-    const t = e.target.closest("button, a, input");
+    const t = e.target.closest("button, a, input, [data-photo]");
     if (!t) return;
     if (t.dataset.go) return go(+t.dataset.go);
+    if (t.dataset.photo) return lightbox(t.dataset.photo);
+    if (t.dataset.delPhoto) {
+      const q = list[idx];
+      if (confirm("Delete this photo?")) photos.remove(t.dataset.delPhoto, q.id).then(() => { renderPhotos(); renderFilters(); });
+      return;
+    }
     if (t.dataset.opt) {
       const L = t.dataset.opt;
       if (list[idx].t === "msq") sel.has(L) ? sel.delete(L) : sel.add(L);
@@ -337,7 +399,8 @@ export function mountPractice(root, D, params) {
       case "reveal": { revealed = true; renderCard(); return; }
       case "retry": { const q = list[idx]; store.clearAttempt(q.id); resetWork(); sel = new Set(); natVal = ""; revealed = false; renderCard(); renderPalette(); renderFilters(); return; }
       case "bookmark": { const q = list[idx]; toast(store.toggleBookmark(q.id) ? "Bookmarked" : "Bookmark removed"); renderCard(); renderPalette(); return; }
-      case "notes": { const n = $("#notes", root); n.hidden = !n.hidden; if (!n.hidden) $("textarea", n).focus(); return; }
+      case "add-photo": $("#photo-file", root).click(); return;
+      case "notes": { const n = $("#notes", root); n.hidden = !n.hidden; if (!n.hidden) { renderPhotos(); $("textarea", n).focus(); } return; }
       case "prev": return go(idx - 1);
       case "next": return go(idx + 1);
       case "close-filters": $(".filters-col", root).classList.remove("open"); return;
@@ -350,6 +413,7 @@ export function mountPractice(root, D, params) {
 
   root.addEventListener("change", (e) => {
     const t = e.target;
+    if (t.id === "photo-file") { addPhotos(t.files).then(() => (t.value = "")); return; }
     if (t.dataset.topic) { t.checked ? f.topics.add(t.dataset.topic) : f.topics.delete(t.dataset.topic); return refreshAll(); }
     if (t.dataset.subject) { t.checked ? f.subjects.add(t.dataset.subject) : f.subjects.delete(t.dataset.subject); return refreshAll(); }
     if (t.id === "f-extra") { f.extra = t.checked; return refreshAll(); }
@@ -386,9 +450,25 @@ export function mountPractice(root, D, params) {
   };
   document.addEventListener("keydown", onKey);
 
+  // paste a screenshot anywhere on the page, or drop images on the notes box
+  const onPaste = (e) => {
+    if (!root.isConnected) return document.removeEventListener("paste", onPaste);
+    const files = [...(e.clipboardData?.files || [])].filter((f) => f.type.startsWith("image/"));
+    if (files.length) { e.preventDefault(); addPhotos(files); }
+  };
+  document.addEventListener("paste", onPaste);
+  root.addEventListener("dragover", (e) => { if (e.target.closest("#notes")) e.preventDefault(); });
+  root.addEventListener("drop", (e) => {
+    if (!e.target.closest("#notes")) return;
+    e.preventDefault();
+    addPhotos(e.dataTransfer.files);
+  });
+
   recompute(focusId);
   resetWork();
   renderFilters();
   renderCard();
   renderPalette();
+  // the photo index loads asynchronously; refresh the badges / "with notes" counts once it is ready
+  photos.ready.then(() => { if (root.isConnected) { renderFilters(); renderCard(); } });
 }

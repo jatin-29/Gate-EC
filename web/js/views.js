@@ -1,6 +1,7 @@
 import { esc, $, $$, pct, toast, icons } from "./util.js";
 import * as store from "./store.js";
 import { subjectArt } from "./art.js";
+import * as photos from "./photos.js";
 
 
 function tally(D, qs) {
@@ -209,7 +210,8 @@ export function settingsView(root, applyTheme) {
     <div class="card pad">
       <div class="setting"><div><b>Theme</b><div class="hint">Follows your device by default.</div></div>
         <div class="seg" id="theme">${[["auto", "Auto"], ["light", "Light"], ["dark", "Dark"]].map(([v, l]) => `<button data-v="${v}" class="${th === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
-      <div class="setting"><div><b>Download backup</b><div class="hint">Saves attempts, bookmarks and notes as a JSON file.</div></div><button class="btn" id="exp">Download</button></div>
+      <div class="setting"><div><b>Saved photos</b><div class="hint" id="photo-info">Checking…</div></div></div>
+      <div class="setting"><div><b>Download backup</b><div class="hint">Saves attempts, bookmarks, notes and note photos as a JSON file (photos can make it large).</div></div><button class="btn" id="exp">Download</button></div>
       <div class="setting"><div><b>Restore backup</b><div class="hint">Merge keeps the most recent attempt per question. Replace discards what is here now.</div></div>
         <div class="actions"><input type="file" id="file" accept="application/json" hidden><button class="btn" id="merge">Merge from file…</button><button class="btn danger" id="replace">Replace from file…</button></div></div>
       <div class="setting"><div><b>Reset progress</b><div class="hint">Deletes attempts, bookmarks and notes on this device.</div></div>
@@ -224,9 +226,13 @@ export function settingsView(root, applyTheme) {
     applyTheme();
     $$("#theme button", root).forEach((x) => x.classList.toggle("on", x.dataset.v === v));
   });
-  $("#exp", root).onclick = () => {
+  photos.ready.then(() => photos.storageSummary()).then((i) => {
+    $("#photo-info", root).textContent = `${i.photos} photo${i.photos === 1 ? "" : "s"} saved on this device${i.usedMB != null ? ` · site storage ${i.usedMB} MB` : ""} · ${i.persisted ? "protected from automatic clean-up" : "browser may clear it if the device runs low on space — keep a backup"}`;
+  });
+  $("#exp", root).onclick = async () => {
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([store.exportData()], { type: "application/json" }));
+    const data = { ...JSON.parse(store.exportData()), photos: await photos.exportAll() };
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: "application/json" }));
     a.download = `gate-pyq-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
@@ -236,7 +242,10 @@ export function settingsView(root, applyTheme) {
   $("#replace", root).onclick = () => { if (confirm("Replace all progress on this device with the backup?")) { mode = "replace"; file.click(); } };
   file.onchange = async () => {
     try {
-      store.importData(await file.files[0].text(), mode);
+      const text = await file.files[0].text();
+      store.importData(text, mode);
+      const inc = JSON.parse(text);
+      if (inc.photos?.length || mode === "replace") await photos.importAll(inc.photos, mode);
       toast("Backup restored");
     } catch (err) {
       toast(err.message);
@@ -245,8 +254,9 @@ export function settingsView(root, applyTheme) {
   };
   root.addEventListener("click", (e) => {
     const p = e.target.dataset.reset;
-    if (p && confirm(`Delete all ${p.slice(0, 2).toUpperCase()} progress, bookmarks and notes from this device?`)) {
+    if (p && confirm(`Delete all ${p.slice(0, 2).toUpperCase()} progress, bookmarks, notes and photos from this device?`)) {
       store.resetProgress(p);
+      photos.removeByPrefix(p);
       toast("Progress reset");
     }
   });
