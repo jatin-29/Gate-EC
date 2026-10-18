@@ -118,6 +118,7 @@ export function mountPractice(root, D, params) {
     const cur = list[idx];
     const copy = { ...f, id: cur ? cur.id : "" };
     history.replaceState(null, "", `#/${branch}/practice?${serialize(copy)}`);
+    if (cur) store.setLastVisit({ href: location.hash, label: `${cur.paper.title} · ${cur.ref}`, branch });
     window.dispatchEvent(new Event("gate:url")); // lets the header's branch switcher follow the filters
   }
 
@@ -239,6 +240,7 @@ export function mountPractice(root, D, params) {
     }
     const bm = store.isBookmarked(q.id);
     el.innerHTML = `
+      <div class="progress" aria-hidden="true"><i style="width:${((idx + 1) / list.length) * 100}%"></i></div>
       <div class="q-head">
         <span class="where">${esc(q.paper.title)} · ${esc(q.ref)}</span>
         <span class="tag m${q.m}">${q.m} mark${q.m > 1 ? "s" : ""}</span>
@@ -246,6 +248,7 @@ export function mountPractice(root, D, params) {
         ${q.fm ? `<span class="tag" title="The source is missing a figure for this question">Figure missing</span>` : ""}
         ${q.d ? `<span class="tag d${q.d}">${DIFF[q.d] || ""}</span>` : ""}
         ${done ? `<span class="tag" style="color:var(--${ok ? "ok" : "bad"})">${ok ? "Solved" : "Attempted"}</span>` : ""}
+        <span class="tag timer" id="timer" title="Time on this question">⏱ 0:00</span>
       </div>
       <div class="crumb" style="margin:-8px 0 14px">
         <a href="#/${branch}/practice?s=${s.id}"><b>${esc(s.name)}</b></a> ›
@@ -273,10 +276,11 @@ export function mountPractice(root, D, params) {
       </div>
       <div class="nav-row">
         <button class="btn" data-act="prev" ${idx === 0 ? "disabled" : ""}>← Previous</button>
-        <span class="pos">${idx + 1} / ${list.length}</span>
+        <span class="pos">${idx + 1} / ${list.length} · <button class="linkish" data-act="random">random</button></span>
         <button class="btn" data-act="next" ${idx >= list.length - 1 ? "disabled" : ""}>Next →</button>
       </div>`;
     typeset(el);
+    startTimer(locked);
     if (locked) showExplanation(q);
     if (store.noteOf(q.id) || photos.has(q.id)) { $("#notes", el).hidden = false; renderPhotos(); }
   }
@@ -326,6 +330,22 @@ export function mountPractice(root, D, params) {
     o.onclick = close;
     document.addEventListener("keydown", esc2, true);
     document.body.append(o);
+  }
+
+  // per-question stopwatch (pacing practice); it stops once the answer is revealed
+  let timerHandle, timerStart;
+  function startTimer(stopped) {
+    clearInterval(timerHandle);
+    const el = $("#timer", root);
+    if (!el) return;
+    timerStart = Date.now();
+    if (stopped) return el.remove();
+    timerHandle = setInterval(() => {
+      const t = $("#timer", root);
+      if (!t || !root.isConnected) return clearInterval(timerHandle);
+      const sec = Math.floor((Date.now() - timerStart) / 1000);
+      t.textContent = `⏱ ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+    }, 1000);
   }
 
   async function showExplanation(q) {
@@ -401,6 +421,7 @@ export function mountPractice(root, D, params) {
       case "bookmark": { const q = list[idx]; toast(store.toggleBookmark(q.id) ? "Bookmarked" : "Bookmark removed"); renderCard(); renderPalette(); return; }
       case "add-photo": $("#photo-file", root).click(); return;
       case "notes": { const n = $("#notes", root); n.hidden = !n.hidden; if (!n.hidden) { renderPhotos(); $("textarea", n).focus(); } return; }
+      case "random": return go(Math.floor(Math.random() * list.length));
       case "prev": return go(idx - 1);
       case "next": return go(idx + 1);
       case "close-filters": $(".filters-col", root).classList.remove("open"); return;

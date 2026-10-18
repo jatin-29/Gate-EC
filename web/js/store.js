@@ -99,3 +99,20 @@ export function bookmarks() {
 export function notes() {
   return db.notes;
 }
+
+export const lastVisit = () => db.settings.last || null;
+export function setLastVisit(v) {
+  db.settings.last = v;
+  persist();
+}
+
+// consecutive days with at least one checked answer, counting back from today (or yesterday)
+export function streak() {
+  const day = (d) => new Date(d).toISOString().slice(0, 10);
+  let d = Date.now();
+  if (!db.daily[day(d)]) d -= 864e5;
+  let n = 0;
+  while (db.daily[day(d)]) { n++; d -= 864e5; }
+  return n;
+}
+export const todayCount = () => db.daily[new Date().toISOString().slice(0, 10)] || 0;

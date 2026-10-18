@@ -28,11 +28,16 @@
       <div class="seg" id="branch-seg" hidden></div>
       <nav class="nav" id="nav" aria-label="Sections"></nav>
       <span class="spacer"></span>
+      <span class="streak" id="streak" hidden></span>
       <a class="icon-btn" id="settings-link" href="#/settings" title="Settings &amp; backup" aria-label="Settings"></a>
       <button class="icon-btn" id="theme-btn" title="Toggle theme" aria-label="Toggle theme"></button>
     </div>
   </header>
   <main id="app"><div class="empty">Loading…</div></main>
+  <footer class="site-foot">
+    <span>GATE PYQ · EC · EE · IN</span>
+    <span>Progress is stored only on this device — <a href="#/settings">back it up</a> now and then.</span>
+  </footer>
   <script>
     // If the app fails to start (blocked script, stale cache, old browser) say so instead of hanging on "Loading…".
     function gateFatal(msg) {

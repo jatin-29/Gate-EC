@@ -62,6 +62,16 @@ function chrome(branch, view) {
   nav.innerHTML = branch ? items.map(([v, l, p]) => `<a href="#/${branch}${p}" class="${v === view ? "on" : ""}">${l}</a>`).join("") : "";
 }
 
+const skeleton = () => `<div class="skel"><i style="width:40%;height:28px"></i><i style="width:65%"></i><div class="skel-grid"><i></i><i></i><i></i></div></div>`;
+
+function refreshStreak() {
+  const n = store.streak();
+  const el = document.getElementById("streak");
+  el.hidden = !n;
+  el.textContent = `🔥 ${n}`;
+  el.title = `${n}-day streak · ${store.todayCount()} answers checked today`;
+}
+
 let token = 0;
 async function route() {
   const my = ++token;
@@ -69,6 +79,7 @@ async function route() {
   const parts = path.split("/").filter(Boolean);
   const params = new URLSearchParams(query);
   window.scrollTo({ top: 0 });
+  refreshStreak();
   try {
     if (parts[0] === "settings") {
       chrome(null, "settings");
@@ -77,7 +88,7 @@ async function route() {
     if (!BRANCHES.includes(parts[0])) {
       chrome(null);
       document.title = "GATE PYQ — EC & EE previous-year questions";
-      root.innerHTML = `<div class="empty">Loading…</div>`;
+      root.innerHTML = skeleton();
       const all = await Promise.all(BRANCHES.map(loadBranch));
       if (my === token) landing(root, all);
       return;
@@ -85,7 +96,7 @@ async function route() {
     const b = parts[0];
     const view = parts[1] || "home";
     chrome(b, view);
-    root.innerHTML = `<div class="empty">Loading ${b.toUpperCase()} questions…</div>`;
+    root.innerHTML = skeleton();
     const D = await loadBranch(b);
     if (my !== token) return;
     const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", analytics: "Progress" };

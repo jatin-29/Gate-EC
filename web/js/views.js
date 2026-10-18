@@ -31,11 +31,23 @@ export function landing(root, datasets) {
       </a>`;
     })
     .join("");
+  const last = store.lastVisit();
+  const total = datasets.reduce((n, D) => n + D.official.length, 0);
   root.innerHTML = `<section class="hero">
-      <h1>GATE previous-year questions,<br>sorted by topic.</h1>
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+      <span class="eyebrow">Free · No sign-up · Your progress stays on your device</span>
+      <h1>GATE previous-year questions,<br><span class="grad">sorted by topic.</span></h1>
       <p>GATE EC, EE and IN questions from ${Math.min(...datasets.map((d) => d.years[d.years.length - 1]))} to ${Math.max(...datasets.map((d) => d.years[0]))}, split into subjects and topics, with answers and worked solutions. Progress stays on your device.</p>
+      ${last ? `<a class="btn primary big" href="${esc(last.href)}">▶ Resume: ${esc(last.label)}</a>` : `<a class="btn primary big" href="#/ec">Start practising</a>`}
     </section>
-    <div class="branch-cards">${cards}</div>`;
+    <div class="branch-cards">${cards}</div>
+    <section class="features">
+      ${[["🧭", "Topic-first", "Every question filed under a subject and chapter, so you can drill one topic at a time."],
+         ["🔥", "Weightage map", "See which topics carried the most questions and marks, year by year."],
+         ["📝", "Notes & photos", "Attach your own notes, handwritten solutions or screenshots to any question."],
+         ["📊", "Track progress", `${total.toLocaleString()} questions with accuracy, weak topics and streaks.`]]
+        .map(([i, h, t]) => `<div class="card feature"><div class="fi">${i}</div><h3>${h}</h3><p>${t}</p></div>`).join("")}
+    </section>`;
 }
 
 // ---------- branch home: subjects & topics ----------
@@ -72,7 +84,9 @@ export function branchHome(root, D) {
   root.innerHTML = `
     <h1 class="page-title">GATE ${b.toUpperCase()} · ${esc(D.title)}</h1>
     <p class="page-sub">${D.official.length.toLocaleString()} questions from ${new Set(D.official.map((q) => q.p)).size} papers, grouped into ${D.subjects.length} subjects. Pick a topic to practise.</p>
+    ${store.lastVisit() && store.lastVisit().branch === b ? `<a class="card resume" href="${esc(store.lastVisit().href)}"><span>▶</span><div><b>Continue where you left off</b><div class="hint">${esc(store.lastVisit().label)}</div></div></a>` : ""}
     <div class="stats-strip">
+      <div class="card"><div class="stat"><b>${store.streak()}🔥</b><span>Day streak · ${store.todayCount()} today</span></div></div>
       <div class="card"><div class="stat"><b>${t.attempted}</b><span>Attempted</span></div></div>
       <div class="card"><div class="stat"><b>${pct(t.correct, t.attempted)}%</b><span>Accuracy</span></div></div>
       <div class="card"><div class="stat"><b>${store.bookmarks().filter((i) => i.startsWith(b + "-")).length}</b><span>Bookmarked</span></div></div>
@@ -80,9 +94,32 @@ export function branchHome(root, D) {
     </div>
     <h3 style="margin-bottom:10px">Practise by year</h3>
     <div class="year-strip">${D.years.map((y) => `<a class="chip" href="#/${b}/practice?y=${y}">${y}</a>`).join("")}</div>
-    <h3 style="margin-bottom:12px">Practise by subject &amp; topic</h3>
+    <div class="topic-head"><h3>Practise by subject &amp; topic</h3><input class="field" id="topic-find" type="search" placeholder="Find a topic… e.g. Laplace, MOSFET, Smith chart" aria-label="Find a topic"></div>
     <div class="subject-grid">${subjects}</div>
+    <p class="empty" id="topic-none" hidden>No topic matches that search.</p>
     ${extra ? `<p class="page-sub" style="margin-top:28px">Looking for more? <a href="#/${b}/practice?x=1&sort=topic">${extra.toLocaleString()} extra General Aptitude &amp; Maths questions</a> from other branches’ papers are available too.</p>` : ""}`;
+  wireTopicSearch(root);
+}
+
+function wireTopicSearch(root) {
+  const input = $("#topic-find", root);
+  if (!input) return;
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    let shown = 0;
+    $$(".subject-card", root).forEach((card) => {
+      const subjectHit = card.querySelector("h3").textContent.toLowerCase().includes(q);
+      let any = false;
+      $$(".topic-list li", card).forEach((li) => {
+        const hit = !q || subjectHit || li.textContent.toLowerCase().includes(q);
+        li.hidden = !hit;
+        any ||= hit;
+      });
+      card.hidden = !any;
+      if (any) shown++;
+    });
+    $("#topic-none", root).hidden = shown > 0;
+  });
 }
 
 // ---------- topic × year weightage ----------
