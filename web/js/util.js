@@ -14,19 +14,29 @@ export function toast(msg) {
 
 export const pct = (a, b) => (b ? Math.round((100 * a) / b) : 0);
 
-// Render KaTeX inside an element once the (deferred) library has loaded.
+// Formulas are stored as \(inline\) and \[display\] TeX inside HTML. KaTeX is rendered per formula
+// (not via auto-render) so one bad formula cannot stop the rest of a question from rendering.
+const MATH = /\\\[([\s\S]*?)\\\]|\\\(([\s\S]*?)\\\)/g;
+const unescapeHtml = (t) => t.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+
+export function renderMath(html) {
+  return html.replace(MATH, (_, display, inline) => {
+    const src = unescapeHtml(display ?? inline);
+    try {
+      return window.katex.renderToString(src, { displayMode: display !== undefined, throwOnError: false, strict: false });
+    } catch {
+      return `<code>${esc(src)}</code>`;
+    }
+  });
+}
+
 export function typeset(el) {
-  const run = () =>
-    window.renderMathInElement(el, {
-      delimiters: [
-        { left: "\\[", right: "\\]", display: true },
-        { left: "\\(", right: "\\)", display: false },
-      ],
-      throwOnError: false,
-    });
-  if (window.renderMathInElement) return run();
+  const run = () => {
+    el.innerHTML = renderMath(el.innerHTML);
+  };
+  if (window.katex) return run();
   const timer = setInterval(() => {
-    if (window.renderMathInElement) {
+    if (window.katex) {
       clearInterval(timer);
       run();
     }

@@ -1,7 +1,6 @@
 import { esc, $, $$, pct, toast, icons } from "./util.js";
 import * as store from "./store.js";
 
-const BRANCH_INFO = { ec: "Electronics & Communication", ee: "Electrical" };
 
 function tally(D, qs) {
   let attempted = 0, correct = 0;
@@ -32,7 +31,7 @@ export function landing(root, datasets) {
     .join("");
   root.innerHTML = `<section class="hero">
       <h1>GATE previous-year questions,<br>sorted by topic.</h1>
-      <p>Every GATE EC and EE paper from ${datasets[0].years[datasets[0].years.length - 1]} to ${datasets[0].years[0]}, split into subjects and topics, with answers and worked solutions. Progress stays on your device.</p>
+      <p>GATE EC, EE and IN questions from ${Math.min(...datasets.map((d) => d.years[d.years.length - 1]))} to ${Math.max(...datasets.map((d) => d.years[0]))}, split into subjects and topics, with answers and worked solutions. Progress stays on your device.</p>
     </section>
     <div class="branch-cards">${cards}</div>`;
 }

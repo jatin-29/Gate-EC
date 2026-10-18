@@ -5,7 +5,7 @@ import { mountPractice } from "./practice.js";
 import { landing, branchHome, weightage, analytics, settingsView } from "./views.js";
 import { mountCalculator } from "./calc.js";
 
-const BRANCHES = ["ec", "ee"];
+const BRANCHES = ["ec", "ee", "in"];
 const root = $("#app");
 const nav = $("#nav");
 const seg = $("#branch-seg");

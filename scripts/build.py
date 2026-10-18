@@ -17,7 +17,7 @@ import time
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
-BRANCHES = ["ec", "ee"]
+BRANCHES = ["ec", "ee", "in"]
 
 
 def fail(msg):
@@ -39,13 +39,22 @@ def build_branch(branch):
             qid = f"{branch}-{p['key']}-{q['n']}"
             if q["subject"] not in valid or q["topic"] not in valid[q["subject"]]:
                 fail(f"{qid}: unknown subject/topic {q['subject']}/{q['topic']}")
-            if q["type"] not in ("mcq", "msq", "nat"):
+            if q["type"] not in ("mcq", "msq", "nat", "desc"):
                 fail(f"{qid}: bad type {q['type']}")
             if q["answer"] is None:
                 warnings.append(qid)
             row = {"id": qid, "p": p["key"], "n": q["n"], "m": q["marks"], "t": q["type"],
-                   "s": q["subject"], "tp": q["topic"], "q": q["question"], "a": q["answer"]}
-            if q["type"] != "nat":
+                   "s": q["subject"], "tp": q["topic"], "q": q["question"], "a": q["answer"],
+                   "ref": q.get("ref") or f"Q{q['n']}"}
+            if q.get("difficulty"):
+                row["d"] = q["difficulty"]
+            if q.get("figmiss"):
+                row["fm"] = 1
+            if q.get("reveal"):
+                row["r"] = q["reveal"]
+            if q.get("note"):
+                row["nt"] = q["note"]
+            if q["type"] in ("mcq", "msq"):
                 row["o"] = q["options"]
             questions.append(row)
             if q.get("explanation"):

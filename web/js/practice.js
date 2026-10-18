@@ -5,6 +5,7 @@ import { loadExplanations, checkAnswer, answerText } from "./data.js";
 const STATUSES = [["all", "All"], ["unattempted", "Unattempted"], ["correct", "Correct"], ["incorrect", "Incorrect"], ["bookmarked", "Bookmarked"], ["noted", "With notes"]];
 const SORTS = [["new", "Newest paper first"], ["old", "Oldest paper first"], ["topic", "Syllabus order"], ["rand", "Shuffle"]];
 
+const DIFF = { 1: "Easy", 2: "Medium", 3: "Hard" };
 const csv = (v) => (v ? String(v).split(",").filter(Boolean) : []);
 
 export function parseFilters(params) {
@@ -15,6 +16,7 @@ export function parseFilters(params) {
     years: new Set(csv(params.get("y")).map(Number)),
     types: new Set(csv(params.get("t"))),
     marks: new Set(csv(params.get("m")).map(Number)),
+    diffs: new Set(csv(params.get("d")).map(Number)),
     status: params.get("st") || "all",
     sort: params.get("sort") || "new",
     extra: params.get("x") === "1",
@@ -30,6 +32,7 @@ function serialize(f) {
   if (f.years.size) p.set("y", [...f.years].join(","));
   if (f.types.size) p.set("t", [...f.types].join(","));
   if (f.marks.size) p.set("m", [...f.marks].join(","));
+  if (f.diffs.size) p.set("d", [...f.diffs].join(","));
   if (f.status !== "all") p.set("st", f.status);
   if (f.sort !== "new") p.set("sort", f.sort);
   if (f.extra) p.set("x", "1");
@@ -81,6 +84,7 @@ export function mountPractice(root, D, params) {
     if (f.years.size && !(q.year && f.years.has(q.year))) return false;
     if (f.types.size && !f.types.has(q.t)) return false;
     if (f.marks.size && !f.marks.has(q.m)) return false;
+    if (f.diffs.size && !f.diffs.has(q.d)) return false;
     if (f.q && !f.q.toLowerCase().split(/\s+/).every((w) => q.hay.includes(w))) return false;
     if (f.status !== "all") {
       const st = store.statusOf(q.id);
@@ -149,11 +153,13 @@ export function mountPractice(root, D, params) {
       <div>${subj}</div>
       <h3>Year</h3>
       <div class="chips">${D.years.map((y) => chip("data-year", y, y, f.years.has(y))).join("")}</div>
-      <label class="check" style="margin-top:8px"><input type="checkbox" id="f-extra" ${f.extra ? "checked" : ""}> <span>Include extra practice (other branches’ GA &amp; Maths)</span></label>
+      ${D.papers.some((p) => p.kind === "extra") ? `<label class="check" style="margin-top:8px"><input type="checkbox" id="f-extra" ${f.extra ? "checked" : ""}> <span>Include extra practice questions</span></label>` : ""}
       <h3>Type</h3>
-      <div class="chips">${[["mcq", "MCQ"], ["msq", "MSQ"], ["nat", "NAT"]].map(([v, l]) => chip("data-type", v, l, f.types.has(v))).join("")}</div>
+      <div class="chips">${[["mcq", "MCQ"], ["msq", "MSQ"], ["nat", "NAT"], ["desc", "Descriptive"]].filter(([v]) => D.types.has(v)).map(([v, l]) => chip("data-type", v, l, f.types.has(v))).join("")}</div>
       <h3>Marks</h3>
       <div class="chips">${[1, 2].map((m) => chip("data-marks", m, `${m} mark`, f.marks.has(m))).join("")}</div>
+      <h3>Difficulty</h3>
+      <div class="chips">${[1, 2, 3].filter((d) => D.hasDifficulty.has(d)).map((d) => chip("data-diff", d, DIFF[d], f.diffs.has(d))).join("")}</div>
       <h3>Status</h3>
       <div class="chips">${STATUSES.map(([v, l]) => chip("data-status", v, l, f.status === v)).join("")}</div>
       <h3>Order</h3>
@@ -170,7 +176,7 @@ export function mountPractice(root, D, params) {
       <h3>Questions</h3>
       <div class="sumline"><b>${list.length}</b> matching · ${c.correct} ✓ · ${c.incorrect} ✗</div>
       <div class="pal-grid">${list
-        .map((q, i) => `<button data-go="${i}" title="${esc(q.paper.title)} · Q${q.n}" class="${store.statusOf(q.id)} ${i === idx ? "current" : ""} ${store.isBookmarked(q.id) ? "bmk" : ""}">${i + 1}</button>`)
+        .map((q, i) => `<button data-go="${i}" title="${esc(q.paper.title)} · ${esc(q.ref)}" class="${store.statusOf(q.id)} ${i === idx ? "current" : ""} ${store.isBookmarked(q.id) ? "bmk" : ""}">${i + 1}</button>`)
         .join("")}</div>
       <div class="legend">
         <span><i style="background:var(--ok-weak);border-color:var(--ok)"></i>Correct</span>
@@ -208,10 +214,12 @@ export function mountPractice(root, D, params) {
     const done = !!store.attemptOf(q.id);
     const ok = done ? store.attemptOf(q.id).ok : null;
     const locked = revealed;
-    const correctSet = q.t === "msq" ? new Set(q.a || []) : new Set(q.a ? [q.a] : []);
+    const correctSet = new Set(Array.isArray(q.a) ? q.a : q.a ? [q.a] : []);
     const opts =
-      q.t === "nat"
-        ? `<div class="nat"><input id="nat" inputmode="decimal" autocomplete="off" placeholder="Enter your answer" value="${esc(natVal)}" ${locked ? "disabled" : ""} class="${locked && q.a ? (checkAnswer(q, natVal) ? "right" : "wrong") : ""}"><span class="hint">Numerical answer type${q.a && q.a.min !== q.a.max ? " · accepted range applies" : ""}</span></div>`
+      q.t === "desc"
+        ? `<div class="hint" style="margin:16px 0">Descriptive question: work it out, then reveal the answer.</div>`
+        : q.t === "nat"
+        ? `<div class="nat"><input id="nat" inputmode="decimal" autocomplete="off" placeholder="Enter your answer" value="${esc(natVal)}" ${locked ? "disabled" : ""} class="${locked && q.a ? (checkAnswer(q, natVal) ? "right" : "wrong") : ""}"><span class="hint">Numerical answer type${q.a && q.a.some(([lo, hi]) => lo !== hi) ? " · a range of values is accepted" : ""}</span></div>`
         : `<div class="options" role="${q.t === "msq" ? "group" : "radiogroup"}">${q.o
             .map((o, i) => {
               const L = "ABCD"[i];
@@ -222,16 +230,19 @@ export function mountPractice(root, D, params) {
             .join("")}</div>${q.t === "msq" ? `<div class="hint">One or more options may be correct (MSQ). Select all that apply.</div>` : ""}`;
     let verdict = "";
     if (locked) {
-      if (q.a == null) verdict = `<div class="verdict info">Answer key not available for this question.</div>`;
+      if (q.t === "desc") verdict = `<div class="verdict info">${q.r ? `Answer: ${q.r}` : "Answer key not available for this question."}</div>`;
+      else if (q.a == null) verdict = `<div class="verdict info">${esc(q.nt || "Answer key not available for this question.")}</div>`;
       else if (done) verdict = ok ? `<div class="verdict ok">✓ Correct — answer: ${esc(answerText(q))}</div>` : `<div class="verdict bad">✗ Incorrect — correct answer: ${esc(answerText(q))}</div>`;
       else verdict = `<div class="verdict info">Answer: <b>${esc(answerText(q))}</b></div>`;
     }
     const bm = store.isBookmarked(q.id);
     el.innerHTML = `
       <div class="q-head">
-        <span class="where">${esc(q.paper.title)} · Q${q.n}</span>
+        <span class="where">${esc(q.paper.title)} · ${esc(q.ref)}</span>
         <span class="tag m${q.m}">${q.m} mark${q.m > 1 ? "s" : ""}</span>
         <span class="tag">${q.t.toUpperCase()}</span>
+        ${q.fm ? `<span class="tag" title="The source is missing a figure for this question">Figure missing</span>` : ""}
+        ${q.d ? `<span class="tag d${q.d}">${DIFF[q.d] || ""}</span>` : ""}
         ${done ? `<span class="tag" style="color:var(--${ok ? "ok" : "bad"})">${ok ? "Solved" : "Attempted"}</span>` : ""}
       </div>
       <div class="crumb" style="margin:-8px 0 14px">
@@ -241,7 +252,7 @@ export function mountPractice(root, D, params) {
       <div class="q-body" id="qbody">${q.q}</div>
       ${opts}
       <div class="actions">
-        ${locked ? "" : `<button class="btn primary" data-act="check" ${q.t === "nat" ? "" : sel.size ? "" : "disabled"}>Check answer</button><button class="btn" data-act="reveal">Show answer</button>`}
+        ${locked ? "" : `${q.t === "desc" ? "" : `<button class="btn primary" data-act="check" ${q.t === "nat" ? "" : sel.size ? "" : "disabled"}>Check answer</button>`}<button class="btn" data-act="reveal">Show answer</button>`}
         ${done ? `<button class="btn" data-act="retry">Try again</button>` : ""}
         ${locked && !done ? `<button class="btn" data-act="retry">Hide answer</button>` : ""}
         <button class="btn bm ${bm ? "on" : ""}" data-act="bookmark">${bm ? "★ Bookmarked" : "☆ Bookmark"}</button>
@@ -318,6 +329,7 @@ export function mountPractice(root, D, params) {
     if (t.dataset.year) { const y = +t.dataset.year; f.years.has(y) ? f.years.delete(y) : f.years.add(y); return refreshAll(); }
     if (t.dataset.type) { const v = t.dataset.type; f.types.has(v) ? f.types.delete(v) : f.types.add(v); return refreshAll(); }
     if (t.dataset.marks) { const v = +t.dataset.marks; f.marks.has(v) ? f.marks.delete(v) : f.marks.add(v); return refreshAll(); }
+    if (t.dataset.diff) { const v = +t.dataset.diff; f.diffs.has(v) ? f.diffs.delete(v) : f.diffs.add(v); return refreshAll(); }
     if (t.dataset.status) { f.status = t.dataset.status; return refreshAll(); }
     switch (t.dataset.act) {
       case "check": return submit();
@@ -330,7 +342,7 @@ export function mountPractice(root, D, params) {
       case "close-filters": $(".filters-col", root).classList.remove("open"); return;
       case "open-filters": $(".filters-col", root).classList.add("open"); return;
       case "reset":
-        f.q = ""; f.subjects.clear(); f.topics.clear(); f.years.clear(); f.types.clear(); f.marks.clear(); f.status = "all"; f.sort = "new"; f.extra = false;
+        f.q = ""; f.subjects.clear(); f.topics.clear(); f.years.clear(); f.types.clear(); f.marks.clear(); f.diffs.clear(); f.status = "all"; f.sort = "new"; f.extra = false;
         return refreshAll();
     }
   });

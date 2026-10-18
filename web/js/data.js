@@ -17,6 +17,8 @@ export async function loadBranch(branch) {
     q.tk = `${q.s}/${q.tp}`;
     q.hay = (q.q.replace(/<[^>]+>/g, " ") + " " + (q.o || []).join(" ").replace(/<[^>]+>/g, " ")).toLowerCase();
   }
+  d.types = new Set(d.questions.map((q) => q.t));
+  d.hasDifficulty = new Set(d.questions.map((q) => q.d).filter(Boolean));
   d.byId = new Map(d.questions.map((q) => [q.id, q]));
   d.official = d.questions.filter((q) => !q.extra);
   d.years = [...new Set(d.official.map((q) => q.year))].sort((a, b) => b - a);
@@ -36,6 +38,8 @@ export async function loadExplanations(branch) {
   return expCache[branch];
 }
 
+// Answer formats: mcq "A" or ["C","D"] (either accepted); msq ["A","C"] (all required);
+// nat [[min,max], ...] (any range accepted); null when the official key gives no single answer.
 export function checkAnswer(q, given) {
   const a = q.a;
   if (a == null) return null;
@@ -43,18 +47,15 @@ export function checkAnswer(q, given) {
     const v = parseFloat(String(given).trim());
     if (Number.isNaN(v)) return false;
     const eps = 1e-9;
-    return v >= a.min - eps && v <= a.max + eps;
+    return a.some(([lo, hi]) => v >= lo - eps && v <= hi + eps);
   }
-  if (q.t === "msq") {
-    const g = [...given].sort().join("");
-    return g === [...a].sort().join("");
-  }
-  return given === a;
+  if (q.t === "msq") return [...given].sort().join("") === [...a].sort().join("");
+  return Array.isArray(a) ? a.includes(given) : given === a;
 }
 
 export function answerText(q) {
   const a = q.a;
-  if (a == null) return "not available";
-  if (q.t === "nat") return a.min === a.max ? String(a.min) : `${a.min} to ${a.max}`;
-  return Array.isArray(a) ? a.join(", ") : a;
+  if (a == null) return q.nt || "not available";
+  if (q.t === "nat") return a.map(([lo, hi]) => (lo === hi ? String(lo) : `${lo} to ${hi}`)).join(" or ");
+  return Array.isArray(a) ? a.join(q.t === "msq" ? ", " : " or ") : a;
 }

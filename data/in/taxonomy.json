@@ -1,0 +1,328 @@
+{
+ "branch": "in",
+ "title": "Instrumentation Engineering",
+ "subjects": [
+  {
+   "id": "engineering-mathematics",
+   "name": "Engineering Mathematics",
+   "color": "#6366f1",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "linear-algebra",
+     "name": "Linear Algebra",
+     "aliases": []
+    },
+    {
+     "id": "calculus",
+     "name": "Calculus",
+     "aliases": []
+    },
+    {
+     "id": "vector-calculus",
+     "name": "Vector Calculus",
+     "aliases": []
+    },
+    {
+     "id": "differential-equations",
+     "name": "Differential Equations",
+     "aliases": []
+    },
+    {
+     "id": "complex-variable-analysis",
+     "name": "Complex Variable Analysis",
+     "aliases": []
+    },
+    {
+     "id": "probability-and-statistics",
+     "name": "Probability and Statistics",
+     "aliases": []
+    },
+    {
+     "id": "numerical-methods",
+     "name": "Numerical Methods",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "network-theory",
+   "name": "Network Theory",
+   "color": "#0ea5e9",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "basic-concepts-of-networks",
+     "name": "Basic Concepts of Networks",
+     "aliases": []
+    },
+    {
+     "id": "transient-analysis",
+     "name": "Transient Analysis",
+     "aliases": []
+    },
+    {
+     "id": "network-theorems-miscellaneous-topics",
+     "name": "Network Theorems For DC & Miscellaneous Topics",
+     "aliases": []
+    },
+    {
+     "id": "sinusoidal-steady-state-analysis",
+     "name": "2nd Order Dynamics and Complex Impedance",
+     "aliases": []
+    },
+    {
+     "id": "ac-circuit-analysis",
+     "name": "AC Circuit Analysis",
+     "aliases": []
+    },
+    {
+     "id": "two-port-parameters",
+     "name": "Two Port Parameters",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "signals-and-systems",
+   "name": "Signals and Systems",
+   "color": "#14b8a6",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "basics-of-signals",
+     "name": "Basics of Signals",
+     "aliases": []
+    },
+    {
+     "id": "basics-of-systems",
+     "name": "Basics of Systems",
+     "aliases": []
+    },
+    {
+     "id": "continuous-time-fourier-series",
+     "name": "Continuous Time Fourier Series",
+     "aliases": []
+    },
+    {
+     "id": "continuous-time-fourier-transform",
+     "name": "Continuous Time Fourier Transform",
+     "aliases": []
+    },
+    {
+     "id": "laplace-transform",
+     "name": "Laplace Transform",
+     "aliases": []
+    },
+    {
+     "id": "z-transform",
+     "name": "Z Transform",
+     "aliases": []
+    },
+    {
+     "id": "dtft-dtfs-dft-miscellaneous",
+     "name": "DTFT, DTFS, DFT & Miscellaneous",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "analog-electronics",
+   "name": "Analog Electronics",
+   "color": "#ef4444",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "diode-circuits-and-applications",
+     "name": "Diode Circuits and applications",
+     "aliases": []
+    },
+    {
+     "id": "mosfets",
+     "name": "MOSFETs",
+     "aliases": []
+    },
+    {
+     "id": "operational-amplifier",
+     "name": "Operational Amplifier",
+     "aliases": []
+    },
+    {
+     "id": "bjts",
+     "name": "BJTs",
+     "aliases": []
+    },
+    {
+     "id": "miscellaneous-topics",
+     "name": "Miscellaneous Topics",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "digital-electronics",
+   "name": "Digital Electronics",
+   "color": "#8b5cf6",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "logic-gates-and-boolean-algebra",
+     "name": "Logic Gates and Boolean Algebra",
+     "aliases": []
+    },
+    {
+     "id": "representation-of-boolean-expressions-and-kmaps",
+     "name": "Representation of Boolean Expressions and K-Maps",
+     "aliases": []
+    },
+    {
+     "id": "number-systems",
+     "name": "Number Systems",
+     "aliases": []
+    },
+    {
+     "id": "combinational-circuits",
+     "name": "Combinational Circuits",
+     "aliases": []
+    },
+    {
+     "id": "sequential-circuits",
+     "name": "Sequential Circuits",
+     "aliases": []
+    },
+    {
+     "id": "adc-and-dac",
+     "name": "ADC & DAC",
+     "aliases": []
+    },
+    {
+     "id": "logic-families-and-semiconductor-memories",
+     "name": "Logic Families and Semiconductor Memories",
+     "aliases": []
+    },
+    {
+     "id": "computer-organization-and-architecture",
+     "name": "Computer Organization and Architecture",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "control-systems",
+   "name": "Control Systems",
+   "color": "#22c55e",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "basics-of-control-systems",
+     "name": "Basics of Control Systems",
+     "aliases": []
+    },
+    {
+     "id": "block-diagram-and-signal-flow-graph",
+     "name": "Block Diagram and Signal Flow Graph",
+     "aliases": []
+    },
+    {
+     "id": "time-response-analysis",
+     "name": "Time Response Analysis",
+     "aliases": []
+    },
+    {
+     "id": "rouths-stability-criterion",
+     "name": "Routh's Stability Criterion",
+     "aliases": []
+    },
+    {
+     "id": "root-locus",
+     "name": "Root Locus",
+     "aliases": []
+    },
+    {
+     "id": "polar-plot-frequency-response-of-2nd-order-systems",
+     "name": "Polar Plot and Frequency Response of Second Order Systems",
+     "aliases": []
+    },
+    {
+     "id": "nyquist-plot",
+     "name": "Nyquist Plot",
+     "aliases": []
+    },
+    {
+     "id": "bode-plot",
+     "name": "Bode Plot",
+     "aliases": []
+    },
+    {
+     "id": "state-space-analysis",
+     "name": "State Space Analysis",
+     "aliases": []
+    },
+    {
+     "id": "controllers-and-compensators",
+     "name": "Controllers and Compensators",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "electromagnetic-fields",
+   "name": "Electromagnetic Fields",
+   "color": "#f97316",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "electrostatics",
+     "name": "Electrostatics",
+     "aliases": []
+    },
+    {
+     "id": "magnetostatics",
+     "name": "Magnetostatics",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "electrical-machines",
+   "name": "Electrical Machines",
+   "color": "#a855f7",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "magnetic-circuits",
+     "name": "Magnetic Circuits",
+     "aliases": []
+    },
+    {
+     "id": "transformers",
+     "name": "Single Phase Transformers",
+     "aliases": []
+    },
+    {
+     "id": "three-phase-induction-machines",
+     "name": "Three Phase Induction Machines",
+     "aliases": []
+    }
+   ]
+  },
+  {
+   "id": "general-aptitude",
+   "name": "General Aptitude",
+   "color": "#84cc16",
+   "aliases": [],
+   "topics": [
+    {
+     "id": "verbal-ability",
+     "name": "Verbal Ability",
+     "aliases": []
+    },
+    {
+     "id": "numerical-ability",
+     "name": "Numerical Ability",
+     "aliases": []
+    }
+   ]
+  }
+ ]
+}
