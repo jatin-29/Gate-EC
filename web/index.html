@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GATE PYQ — EC &amp; EE previous-year questions</title>
+  <meta name="description" content="Topic-wise GATE ECE and EE previous-year questions with answers and solutions, 2001 to 2025. Free, no sign-up.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+  <link rel="stylesheet" href="css/app.css?v=__BUILD__">
+  <script>
+    window.BUILD = "__BUILD__";
+    // apply the saved theme before first paint to avoid a flash
+    try {
+      var t = JSON.parse(localStorage.getItem("gatepyq:v1")).settings.theme;
+      if (t === "dark" || (t !== "light" && matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.dataset.theme = "dark";
+    } catch (e) { if (matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark"; }
+  </script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#/"><span class="brand-mark">G</span><span>GATE PYQ</span></a>
+      <div class="seg" id="branch-seg" hidden></div>
+      <nav class="nav" id="nav" aria-label="Sections"></nav>
+      <span class="spacer"></span>
+      <a class="icon-btn" id="settings-link" href="#/settings" title="Settings &amp; backup" aria-label="Settings"></a>
+      <button class="icon-btn" id="theme-btn" title="Toggle theme" aria-label="Toggle theme"></button>
+    </div>
+  </header>
+  <main id="app"><div class="empty">Loading…</div></main>
+  <noscript><p style="padding:24px">This site needs JavaScript.</p></noscript>
+  <script type="module" src="js/app.js?v=__BUILD__"></script>
+</body>
+</html>

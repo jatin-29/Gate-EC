@@ -1,0 +1,649 @@
+{
+ "branch": "ee",
+ "title": "Electrical Engineering",
+ "subjects": [
+  {
+   "name": "Engineering Mathematics",
+   "color": "#6366f1",
+   "topics": [
+    {
+     "name": "Linear Algebra",
+     "aliases": [],
+     "id": "linear-algebra"
+    },
+    {
+     "name": "Calculus",
+     "aliases": [],
+     "id": "calculus"
+    },
+    {
+     "name": "Differential Equations",
+     "aliases": [],
+     "id": "differential-equations"
+    },
+    {
+     "name": "Complex Analysis",
+     "aliases": [
+      "Complex Variables"
+     ],
+     "id": "complex-analysis"
+    },
+    {
+     "name": "Probability & Statistics",
+     "aliases": [
+      "Probability and Statistics"
+     ],
+     "id": "probability-statistics"
+    },
+    {
+     "name": "Numerical Methods",
+     "aliases": [
+      "Numerical Method"
+     ],
+     "id": "numerical-methods"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "engineering-mathematics",
+   "aliases": []
+  },
+  {
+   "name": "Electric Circuits",
+   "color": "#0ea5e9",
+   "topics": [
+    {
+     "name": "Basics of Electric Circuits",
+     "aliases": [
+      "Basics of Electric Circuit"
+     ],
+     "id": "basics-of-electric-circuits"
+    },
+    {
+     "name": "Network Theorems",
+     "aliases": [],
+     "id": "network-theorems"
+    },
+    {
+     "name": "Transients & Steady State Response",
+     "aliases": [
+      "Transients and Steady State Response"
+     ],
+     "id": "transients-steady-state-response"
+    },
+    {
+     "name": "Steady State AC Analysis",
+     "aliases": [],
+     "id": "steady-state-ac-analysis"
+    },
+    {
+     "name": "Resonance & Locus Diagrams",
+     "aliases": [
+      "Resonance and Locus Diagrams"
+     ],
+     "id": "resonance-locus-diagrams"
+    },
+    {
+     "name": "Magnetically Coupled Circuits, Topology & Filters",
+     "aliases": [
+      "Magnetically Coupled Circuits, Network Topology and Filters"
+     ],
+     "id": "magnetically-coupled-circuits-topology-filters"
+    },
+    {
+     "name": "Two-Port Networks & Network Functions",
+     "aliases": [
+      "Two Port Network and Network Functions"
+     ],
+     "id": "two-port-networks-network-functions"
+    },
+    {
+     "name": "Three-Phase Circuits",
+     "aliases": [],
+     "id": "three-phase-circuits"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "electric-circuits",
+   "aliases": []
+  },
+  {
+   "name": "Electromagnetic Fields",
+   "aliases": [
+    "Electromagnetic Theory"
+   ],
+   "color": "#f97316",
+   "topics": [
+    {
+     "name": "Coordinate Systems & Vector Calculus",
+     "aliases": [
+      "Coordinate Systems and Vector Calculus"
+     ],
+     "id": "coordinate-systems-vector-calculus"
+    },
+    {
+     "name": "Electrostatic Fields",
+     "aliases": [],
+     "id": "electrostatic-fields"
+    },
+    {
+     "name": "Magnetostatic Fields",
+     "aliases": [],
+     "id": "magnetostatic-fields"
+    },
+    {
+     "name": "Time Varying Fields",
+     "aliases": [],
+     "id": "time-varying-fields"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "electromagnetic-fields"
+  },
+  {
+   "name": "Signals and Systems",
+   "color": "#14b8a6",
+   "topics": [
+    {
+     "name": "Introduction to CT & DT Signals",
+     "aliases": [
+      "Introduction of C.T. and D.T. Signals"
+     ],
+     "id": "introduction-to-ct-dt-signals"
+    },
+    {
+     "name": "Linear Time Invariant Systems",
+     "aliases": [],
+     "id": "linear-time-invariant-systems"
+    },
+    {
+     "name": "Fourier Series",
+     "aliases": [],
+     "id": "fourier-series"
+    },
+    {
+     "name": "Fourier Transform",
+     "aliases": [],
+     "id": "fourier-transform"
+    },
+    {
+     "name": "Laplace Transform",
+     "aliases": [],
+     "id": "laplace-transform"
+    },
+    {
+     "name": "Sampling",
+     "aliases": [],
+     "id": "sampling"
+    },
+    {
+     "name": "Z-Transform",
+     "aliases": [],
+     "id": "z-transform"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "signals-and-systems",
+   "aliases": []
+  },
+  {
+   "name": "Electrical Machines",
+   "color": "#a855f7",
+   "topics": [
+    {
+     "name": "Transformers",
+     "aliases": [],
+     "id": "transformers"
+    },
+    {
+     "name": "DC Machines",
+     "aliases": [],
+     "id": "dc-machines"
+    },
+    {
+     "name": "Three-Phase Induction Machines",
+     "aliases": [
+      "Three Phase Induction Machines"
+     ],
+     "id": "three-phase-induction-machines"
+    },
+    {
+     "name": "Synchronous Machines",
+     "aliases": [],
+     "id": "synchronous-machines"
+    },
+    {
+     "name": "Single-Phase Induction & Special Machines",
+     "aliases": [
+      "Single Phase Induction Motors, Special Purpose Machines and Electromechanical Energy Conversion System"
+     ],
+     "id": "single-phase-induction-special-machines"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "electrical-machines",
+   "aliases": []
+  },
+  {
+   "name": "Power Systems",
+   "color": "#eab308",
+   "topics": [
+    {
+     "name": "Generating Power Stations",
+     "aliases": [],
+     "id": "generating-power-stations"
+    },
+    {
+     "name": "Transmission Lines: Parameters, Performance & Corona",
+     "aliases": [
+      "Performance of Transmission Lines, Line Parameters and Corona"
+     ],
+     "id": "transmission-lines-parameters-performance-corona"
+    },
+    {
+     "name": "Distribution, Cables & Insulators",
+     "aliases": [
+      "Distribution Systems, Cables and Insulators"
+     ],
+     "id": "distribution-cables-insulators"
+    },
+    {
+     "name": "Per Unit System",
+     "aliases": [],
+     "id": "per-unit-system"
+    },
+    {
+     "name": "Load Flow Studies",
+     "aliases": [],
+     "id": "load-flow-studies"
+    },
+    {
+     "name": "Fault Analysis",
+     "aliases": [],
+     "id": "fault-analysis"
+    },
+    {
+     "name": "Power System Stability",
+     "aliases": [],
+     "id": "power-system-stability"
+    },
+    {
+     "name": "Economic Generation & Load Dispatch",
+     "aliases": [
+      "Economic Power Generation and Load Dispatch"
+     ],
+     "id": "economic-generation-load-dispatch"
+    },
+    {
+     "name": "Compensation & Voltage Control",
+     "aliases": [
+      "Compensation Techniques and Voltage Profile Control"
+     ],
+     "id": "compensation-voltage-control"
+    },
+    {
+     "name": "Switchgear & Protection",
+     "aliases": [
+      "Switch Gear and Protection"
+     ],
+     "id": "switchgear-protection"
+    },
+    {
+     "name": "Power System Transients",
+     "aliases": [],
+     "id": "power-system-transients"
+    },
+    {
+     "name": "HVDC Transmission",
+     "aliases": [
+      "High Voltage DC Transmission"
+     ],
+     "id": "hvdc-transmission"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "power-systems",
+   "aliases": []
+  },
+  {
+   "name": "Control Systems",
+   "color": "#22c55e",
+   "topics": [
+    {
+     "name": "Mathematical Models of Physical Systems",
+     "aliases": [],
+     "id": "mathematical-models-of-physical-systems"
+    },
+    {
+     "name": "Feedback Characteristics",
+     "aliases": [
+      "Feedback Characteristics of Control Systems"
+     ],
+     "id": "feedback-characteristics"
+    },
+    {
+     "name": "Time Response Analysis",
+     "aliases": [],
+     "id": "time-response-analysis"
+    },
+    {
+     "name": "Concepts of Stability",
+     "aliases": [],
+     "id": "concepts-of-stability"
+    },
+    {
+     "name": "Root Locus Techniques",
+     "aliases": [],
+     "id": "root-locus-techniques"
+    },
+    {
+     "name": "Frequency Response Analysis",
+     "aliases": [],
+     "id": "frequency-response-analysis"
+    },
+    {
+     "name": "Design of Control Systems",
+     "aliases": [],
+     "id": "design-of-control-systems"
+    },
+    {
+     "name": "State Variable Analysis",
+     "aliases": [],
+     "id": "state-variable-analysis"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "control-systems",
+   "aliases": []
+  },
+  {
+   "name": "Electrical & Electronic Measurements",
+   "aliases": [
+    "Electrical and Electronic Measurements"
+   ],
+   "color": "#06b6d4",
+   "topics": [
+    {
+     "name": "Characteristics of Instruments & Systems",
+     "aliases": [
+      "Characteristics of Instruments and Measurement Systems"
+     ],
+     "id": "characteristics-of-instruments-systems"
+    },
+    {
+     "name": "Galvanometers, Voltmeters & Ammeters",
+     "aliases": [
+      "Galvanometers, Voltmeters and Ammeters"
+     ],
+     "id": "galvanometers-voltmeters-ammeters"
+    },
+    {
+     "name": "Measurement of Energy & Power",
+     "aliases": [
+      "Measurement of Energy and Power"
+     ],
+     "id": "measurement-of-energy-power"
+    },
+    {
+     "name": "Resistance Measurement & Potentiometers",
+     "aliases": [
+      "Measurement of Resistance and Potentiometers"
+     ],
+     "id": "resistance-measurement-potentiometers"
+    },
+    {
+     "name": "A.C. Bridges",
+     "aliases": [],
+     "id": "a-c-bridges"
+    },
+    {
+     "name": "Instrument Transformers",
+     "aliases": [],
+     "id": "instrument-transformers"
+    },
+    {
+     "name": "CRO & Electronic Measurements",
+     "aliases": [
+      "CRO and Electronic Measurements"
+     ],
+     "id": "cro-electronic-measurements"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "electrical-electronic-measurements"
+  },
+  {
+   "name": "Analog Electronics",
+   "color": "#ef4444",
+   "topics": [
+    {
+     "name": "Diodes & Applications",
+     "aliases": [
+      "Diodes and their Applications"
+     ],
+     "id": "diodes-applications"
+    },
+    {
+     "name": "BJT, FET & Biasing",
+     "aliases": [
+      "BJT, FET and their Biasing Circuits"
+     ],
+     "id": "bjt-fet-biasing"
+    },
+    {
+     "name": "Small Signal Analysis",
+     "aliases": [],
+     "id": "small-signal-analysis"
+    },
+    {
+     "name": "Operational Amplifiers",
+     "aliases": [],
+     "id": "operational-amplifiers"
+    },
+    {
+     "name": "Oscillators & Feedback Amplifiers",
+     "aliases": [
+      "Oscillators and Feedback Amplifiers"
+     ],
+     "id": "oscillators-feedback-amplifiers"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "analog-electronics",
+   "aliases": []
+  },
+  {
+   "name": "Digital Electronics",
+   "color": "#8b5cf6",
+   "topics": [
+    {
+     "name": "Boolean Algebra & Minimization",
+     "aliases": [
+      "Boolean Algebra and Minimization"
+     ],
+     "id": "boolean-algebra-minimization"
+    },
+    {
+     "name": "Logic Gates",
+     "aliases": [],
+     "id": "logic-gates"
+    },
+    {
+     "name": "Combinational Logic Circuits",
+     "aliases": [],
+     "id": "combinational-logic-circuits"
+    },
+    {
+     "name": "Sequential Logic Circuits",
+     "aliases": [
+      "Sequential Circuits"
+     ],
+     "id": "sequential-logic-circuits"
+    },
+    {
+     "name": "Logic Families",
+     "aliases": [
+      "Logic Families and Miscellaneous"
+     ],
+     "id": "logic-families"
+    },
+    {
+     "name": "ADC & DAC",
+     "aliases": [
+      "A-D and D-A Converters"
+     ],
+     "id": "adc-dac"
+    },
+    {
+     "name": "Microprocessors",
+     "aliases": [],
+     "id": "microprocessors"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "digital-electronics",
+   "aliases": []
+  },
+  {
+   "name": "Power Electronics",
+   "color": "#f43f5e",
+   "topics": [
+    {
+     "name": "Power Semiconductor Devices & Commutation",
+     "aliases": [
+      "Power Semiconductor Devices and Commutation Techniques"
+     ],
+     "id": "power-semiconductor-devices-commutation"
+    },
+    {
+     "name": "Phase Controlled Rectifiers",
+     "aliases": [],
+     "id": "phase-controlled-rectifiers"
+    },
+    {
+     "name": "Choppers",
+     "aliases": [],
+     "id": "choppers"
+    },
+    {
+     "name": "Inverters",
+     "aliases": [],
+     "id": "inverters"
+    },
+    {
+     "name": "Electrical Drives",
+     "aliases": [],
+     "id": "electrical-drives"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "power-electronics",
+   "aliases": []
+  },
+  {
+   "name": "General Aptitude",
+   "color": "#84cc16",
+   "topics": [
+    {
+     "name": "Verbal Ability",
+     "aliases": [],
+     "id": "verbal-ability"
+    },
+    {
+     "name": "Numerical Ability",
+     "aliases": [],
+     "id": "numerical-ability"
+    }
+   ],
+   "id": "general-aptitude",
+   "aliases": []
+  }
+ ]
+}

@@ -1,0 +1,590 @@
+{
+ "branch": "ec",
+ "title": "Electronics & Communication Engineering",
+ "subjects": [
+  {
+   "name": "Engineering Mathematics",
+   "color": "#6366f1",
+   "topics": [
+    {
+     "name": "Linear Algebra",
+     "aliases": [],
+     "id": "linear-algebra"
+    },
+    {
+     "name": "Calculus",
+     "aliases": [],
+     "id": "calculus"
+    },
+    {
+     "name": "Differential Equations",
+     "aliases": [],
+     "id": "differential-equations"
+    },
+    {
+     "name": "Vector Calculus",
+     "aliases": [
+      "Vector Analysis"
+     ],
+     "id": "vector-calculus"
+    },
+    {
+     "name": "Complex Analysis",
+     "aliases": [
+      "Complex Variables"
+     ],
+     "id": "complex-analysis"
+    },
+    {
+     "name": "Probability & Statistics",
+     "aliases": [
+      "Probability and Statistics"
+     ],
+     "id": "probability-statistics"
+    },
+    {
+     "name": "Numerical Methods",
+     "aliases": [
+      "Numerical Method"
+     ],
+     "id": "numerical-methods"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "engineering-mathematics",
+   "aliases": []
+  },
+  {
+   "name": "Network Theory",
+   "color": "#0ea5e9",
+   "topics": [
+    {
+     "name": "Basics of Network Analysis",
+     "aliases": [],
+     "id": "basics-of-network-analysis"
+    },
+    {
+     "name": "Network Theorems",
+     "aliases": [],
+     "id": "network-theorems"
+    },
+    {
+     "name": "Transient Analysis",
+     "aliases": [],
+     "id": "transient-analysis"
+    },
+    {
+     "name": "Sinusoidal Steady State",
+     "aliases": [
+      "Sinusoidal Steady State Analysis"
+     ],
+     "id": "sinusoidal-steady-state"
+    },
+    {
+     "name": "Network Functions",
+     "aliases": [],
+     "id": "network-functions"
+    },
+    {
+     "name": "Two-Port Networks",
+     "aliases": [
+      "Two Port Networks"
+     ],
+     "id": "two-port-networks"
+    },
+    {
+     "name": "Graph Theory & State Equations",
+     "aliases": [
+      "Graph Theory and State Equations"
+     ],
+     "id": "graph-theory-state-equations"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "network-theory",
+   "aliases": []
+  },
+  {
+   "name": "Signals and Systems",
+   "color": "#14b8a6",
+   "topics": [
+    {
+     "name": "Basics of Signals & Systems",
+     "aliases": [
+      "Basics of Signals and Systems"
+     ],
+     "id": "basics-of-signals-systems"
+    },
+    {
+     "name": "LTI Systems",
+     "aliases": [
+      "LTI Systems Continuous and Discrete"
+     ],
+     "id": "lti-systems"
+    },
+    {
+     "name": "Fourier Series",
+     "aliases": [],
+     "id": "fourier-series"
+    },
+    {
+     "name": "Fourier Transform, Frequency Response & Correlation",
+     "aliases": [
+      "Fourier Transforms, Frequency Response and Correlation"
+     ],
+     "id": "fourier-transform-frequency-response-correlation"
+    },
+    {
+     "name": "Laplace Transform",
+     "aliases": [],
+     "id": "laplace-transform"
+    },
+    {
+     "name": "Sampling",
+     "aliases": [],
+     "id": "sampling"
+    },
+    {
+     "name": "Z-Transform",
+     "aliases": [],
+     "id": "z-transform"
+    },
+    {
+     "name": "DTFS, DTFT & DFT",
+     "aliases": [
+      "DTFS, DTFT and DFT"
+     ],
+     "id": "dtfs-dtft-dft"
+    },
+    {
+     "name": "Digital Filters",
+     "aliases": [],
+     "id": "digital-filters"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "signals-and-systems",
+   "aliases": []
+  },
+  {
+   "name": "Electronic Devices",
+   "color": "#f59e0b",
+   "topics": [
+    {
+     "name": "Basic Semiconductor Physics",
+     "aliases": [],
+     "id": "basic-semiconductor-physics"
+    },
+    {
+     "name": "PN-Junction & Special Diodes",
+     "aliases": [
+      "PN-Junction Diodes and Special Diodes",
+      "PN-Junction Diodes and Special"
+     ],
+     "id": "pn-junction-special-diodes"
+    },
+    {
+     "name": "BJT & FET Basics",
+     "aliases": [
+      "BJT and FET Basics"
+     ],
+     "id": "bjt-fet-basics"
+    },
+    {
+     "name": "IC Fabrication",
+     "aliases": [],
+     "id": "ic-fabrication"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "electronic-devices",
+   "aliases": []
+  },
+  {
+   "name": "Analog Circuits",
+   "color": "#ef4444",
+   "topics": [
+    {
+     "name": "Diode Applications",
+     "aliases": [
+      "Diodes Applications"
+     ],
+     "id": "diode-applications"
+    },
+    {
+     "name": "BJT Analysis",
+     "aliases": [],
+     "id": "bjt-analysis"
+    },
+    {
+     "name": "FET & MOSFET Analysis",
+     "aliases": [
+      "FET and MOSFET Analysis"
+     ],
+     "id": "fet-mosfet-analysis"
+    },
+    {
+     "name": "Frequency Response of Amplifiers",
+     "aliases": [
+      "Frequency Response of Amplifier"
+     ],
+     "id": "frequency-response-of-amplifiers"
+    },
+    {
+     "name": "Feedback Amplifiers",
+     "aliases": [],
+     "id": "feedback-amplifiers"
+    },
+    {
+     "name": "Operational Amplifiers",
+     "aliases": [],
+     "id": "operational-amplifiers"
+    },
+    {
+     "name": "Oscillator Circuits",
+     "aliases": [],
+     "id": "oscillator-circuits"
+    },
+    {
+     "name": "Multivibrators & 555 Timer",
+     "aliases": [
+      "Multivibrators and 555 Timer"
+     ],
+     "id": "multivibrators-555-timer"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "analog-circuits",
+   "aliases": []
+  },
+  {
+   "name": "Digital Circuits",
+   "color": "#8b5cf6",
+   "topics": [
+    {
+     "name": "Number Systems",
+     "aliases": [],
+     "id": "number-systems"
+    },
+    {
+     "name": "Boolean Algebra",
+     "aliases": [],
+     "id": "boolean-algebra"
+    },
+    {
+     "name": "Logic Gates",
+     "aliases": [],
+     "id": "logic-gates"
+    },
+    {
+     "name": "Combinational Circuits",
+     "aliases": [],
+     "id": "combinational-circuits"
+    },
+    {
+     "name": "Sequential Circuits",
+     "aliases": [],
+     "id": "sequential-circuits"
+    },
+    {
+     "name": "Finite State Machines",
+     "aliases": [
+      "Finite State Machine and Miscellaneous"
+     ],
+     "id": "finite-state-machines"
+    },
+    {
+     "name": "Logic Families",
+     "aliases": [],
+     "id": "logic-families"
+    },
+    {
+     "name": "Memories",
+     "aliases": [],
+     "id": "memories"
+    },
+    {
+     "name": "ADC & DAC",
+     "aliases": [
+      "ADC and DAC"
+     ],
+     "id": "adc-dac"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "digital-circuits",
+   "aliases": []
+  },
+  {
+   "name": "Microprocessors (8085)",
+   "aliases": [
+    "Microprocessors"
+   ],
+   "color": "#64748b",
+   "topics": [
+    {
+     "name": "Basics of 8085",
+     "aliases": [
+      "Basics of 8085 Microprocessor"
+     ],
+     "id": "basics-of-8085"
+    },
+    {
+     "name": "Instruction Set",
+     "aliases": [
+      "Instructions of 8085 Microprocessor"
+     ],
+     "id": "instruction-set"
+    },
+    {
+     "name": "Programming",
+     "aliases": [
+      "Microprocessor 8085 Programming"
+     ],
+     "id": "programming"
+    },
+    {
+     "name": "Interrupts",
+     "aliases": [
+      "Microprocessor 8085 Interrupts"
+     ],
+     "id": "interrupts"
+    },
+    {
+     "name": "Interfacing & Peripherals",
+     "aliases": [
+      "Interfacing and Peripheral Devices"
+     ],
+     "id": "interfacing-peripherals"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "microprocessors-8085"
+  },
+  {
+   "name": "Control Systems",
+   "color": "#22c55e",
+   "topics": [
+    {
+     "name": "Block Diagram, SFG & Basics",
+     "aliases": [
+      "Basics of Control Systems, Block Diagram and SFGs"
+     ],
+     "id": "block-diagram-sfg-basics"
+    },
+    {
+     "name": "Time Response Analysis",
+     "aliases": [],
+     "id": "time-response-analysis"
+    },
+    {
+     "name": "Stability Analysis",
+     "aliases": [],
+     "id": "stability-analysis"
+    },
+    {
+     "name": "Root Locus",
+     "aliases": [],
+     "id": "root-locus"
+    },
+    {
+     "name": "Frequency Response Analysis",
+     "aliases": [],
+     "id": "frequency-response-analysis"
+    },
+    {
+     "name": "Compensators & Controllers",
+     "aliases": [
+      "Compensators and Controllers"
+     ],
+     "id": "compensators-controllers"
+    },
+    {
+     "name": "State Space Analysis",
+     "aliases": [],
+     "id": "state-space-analysis"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "control-systems",
+   "aliases": []
+  },
+  {
+   "name": "Communication Systems",
+   "color": "#ec4899",
+   "topics": [
+    {
+     "name": "Analog Communications",
+     "aliases": [
+      "Analog Communication Systems"
+     ],
+     "id": "analog-communications"
+    },
+    {
+     "name": "Random Processes",
+     "aliases": [],
+     "id": "random-processes"
+    },
+    {
+     "name": "Random Signals & Noise",
+     "aliases": [
+      "Random Signals and Noise"
+     ],
+     "id": "random-signals-noise"
+    },
+    {
+     "name": "Digital Communications",
+     "aliases": [
+      "Digital Communication Systems"
+     ],
+     "id": "digital-communications"
+    },
+    {
+     "name": "Information Theory & Coding",
+     "aliases": [
+      "Information Theory and Coding"
+     ],
+     "id": "information-theory-coding"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "communication-systems",
+   "aliases": []
+  },
+  {
+   "name": "Electromagnetics",
+   "color": "#f97316",
+   "topics": [
+    {
+     "name": "Basics of Electromagnetics",
+     "aliases": [],
+     "id": "basics-of-electromagnetics"
+    },
+    {
+     "name": "Plane Waves",
+     "aliases": [
+      "Plane waves and Properties",
+      "Uniform Plane Waves"
+     ],
+     "id": "plane-waves"
+    },
+    {
+     "name": "Transmission Lines",
+     "aliases": [],
+     "id": "transmission-lines"
+    },
+    {
+     "name": "Waveguides",
+     "aliases": [],
+     "id": "waveguides"
+    },
+    {
+     "name": "Antennas",
+     "aliases": [],
+     "id": "antennas"
+    },
+    {
+     "name": "Miscellaneous",
+     "aliases": [
+      "",
+      "Basic",
+      "Miscellaneous Topics"
+     ],
+     "id": "miscellaneous"
+    }
+   ],
+   "id": "electromagnetics",
+   "aliases": []
+  },
+  {
+   "name": "General Aptitude",
+   "color": "#84cc16",
+   "topics": [
+    {
+     "name": "Verbal Ability",
+     "aliases": [],
+     "id": "verbal-ability"
+    },
+    {
+     "name": "Numerical Ability",
+     "aliases": [],
+     "id": "numerical-ability"
+    }
+   ],
+   "id": "general-aptitude",
+   "aliases": []
+  }
+ ]
+}
