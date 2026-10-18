@@ -1,5 +1,6 @@
 import { esc, $, $$, pct, toast, icons } from "./util.js";
 import * as store from "./store.js";
+import { subjectArt } from "./art.js";
 
 
 function tally(D, qs) {
@@ -60,6 +61,7 @@ export function branchHome(root, D) {
         })
         .join("");
       return `<article class="card subject-card" style="--accent:${s.color}">
+        <a class="subject-art" href="#/${b}/practice?s=${s.id}" tabindex="-1" aria-hidden="true">${subjectArt(s.id)}</a>
         <header><h3><a href="#/${b}/practice?s=${s.id}">${esc(s.name)}</a></h3><span class="count">${qs.length} Qs</span></header>
         <div class="bar"><i style="width:${pct(st.attempted, st.total)}%"></i></div>
         <ul class="topic-list">${topics}</ul>
