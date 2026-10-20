@@ -24,30 +24,20 @@ export function landing(root, datasets) {
         <h2>${esc(D.title)}</h2>
         <div class="stat-row">
           <div class="stat"><b>${D.official.length.toLocaleString()}</b><span>Questions</span></div>
-          <div class="stat"><b>${D.years[D.years.length - 1]}–${D.years[0]}</b><span>Papers</span></div>
-          <div class="stat"><b>${D.subjects.length}</b><span>Subjects</span></div>
+          <div class="stat"><b>${D.years[D.years.length - 1]}–${D.years[0]}</b><span>Years</span></div>
+          
         </div>
         ${t.attempted ? `<div class="bar" style="margin-top:16px"><i style="width:${pct(t.attempted, t.total)}%"></i></div><div class="hint" style="margin-top:6px">${t.attempted} attempted · ${pct(t.correct, t.attempted)}% accuracy</div>` : `<div class="hint" style="margin-top:16px">${sets} papers · tap to start</div>`}
       </a>`;
     })
     .join("");
   const last = store.lastVisit();
-  const total = datasets.reduce((n, D) => n + D.official.length, 0);
-  root.innerHTML = `<section class="hero">
-      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-      <span class="eyebrow">Free · No sign-up · Your progress stays on your device</span>
-      <h1>GATE previous-year questions,<br><span class="grad">sorted by topic.</span></h1>
-      <p>GATE EC, EE and IN questions from ${Math.min(...datasets.map((d) => d.years[d.years.length - 1]))} to ${Math.max(...datasets.map((d) => d.years[0]))}, split into subjects and topics, with answers and worked solutions. Progress stays on your device.</p>
-      ${last ? `<a class="btn primary big" href="${esc(last.href)}">▶ Resume: ${esc(last.label)}</a>` : `<a class="btn primary big" href="#/ec">Start practising</a>`}
+  root.innerHTML = `<section class="intro">
+      <h1>GATE previous-year questions</h1>
+      <p>EC, EE and IN, ${Math.min(...datasets.map((d) => d.years[d.years.length - 1]))}–${Math.max(...datasets.map((d) => d.years[0]))}, sorted by subject and topic with answers and solutions. Your progress is saved on this device.</p>
+      ${last ? `<a class="btn primary" href="${esc(last.href)}">Resume · ${esc(last.label)}</a>` : ""}
     </section>
-    <div class="branch-cards">${cards}</div>
-    <section class="features">
-      ${[["🧭", "Topic-first", "Every question filed under a subject and chapter, so you can drill one topic at a time."],
-         ["🔥", "Weightage map", "See which topics carried the most questions and marks, year by year."],
-         ["📝", "Notes & photos", "Attach your own notes, handwritten solutions or screenshots to any question."],
-         ["📊", "Track progress", `${total.toLocaleString()} questions with accuracy, weak topics and streaks.`]]
-        .map(([i, h, t]) => `<div class="card feature"><div class="fi">${i}</div><h3>${h}</h3><p>${t}</p></div>`).join("")}
-    </section>`;
+    <div class="branch-cards">${cards}</div>`;
 }
 
 // ---------- branch home: subjects & topics ----------
@@ -248,7 +238,7 @@ export function settingsView(root, applyTheme) {
     <p class="page-sub">Progress, bookmarks and notes live in this browser’s storage. Clearing site data erases them, so keep a backup.</p>
     <div class="card pad">
       <div class="setting"><div><b>Theme</b><div class="hint">Follows your device by default.</div></div>
-        <div class="seg" id="theme">${[["auto", "Auto"], ["light", "Light"], ["dark", "Dark"]].map(([v, l]) => `<button data-v="${v}" class="${th === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
+        <div class="seg" id="theme">${[["dark", "Dark"], ["light", "Light"], ["auto", "System"]].map(([v, l]) => `<button data-v="${v}" class="${th === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
       <div class="setting"><div><b>Saved photos</b><div class="hint" id="photo-info">Checking…</div></div></div>
       <div class="setting"><div><b>Download backup</b><div class="hint">Saves attempts, bookmarks, notes and note photos as a JSON file (photos can make it large).</div></div><button class="btn" id="exp">Download</button></div>
       <div class="setting"><div><b>Restore backup</b><div class="hint">Merge keeps the most recent attempt per question. Replace discards what is here now.</div></div>

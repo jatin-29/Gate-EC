@@ -1,7 +1,7 @@
 // Progress lives in localStorage only; nothing is sent anywhere.
 const KEY = "gatepyq:v1";
 
-const blank = () => ({ attempts: {}, bookmarks: [], notes: {}, daily: {}, settings: { theme: "auto" } });
+const blank = () => ({ attempts: {}, bookmarks: [], notes: {}, daily: {}, settings: { theme: "dark" } });
 
 function load() {
   try {

@@ -13,7 +13,7 @@ const themeBtn = $("#theme-btn");
 
 function applyTheme() {
   const t = store.settings().theme;
-  const dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  const dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches) || !t;
   document.documentElement.dataset.theme = dark ? "dark" : "light";
   themeBtn.innerHTML = dark ? icons.sun : icons.moon;
 }

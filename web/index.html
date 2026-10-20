@@ -1,30 +1,34 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GATE PYQ — EC &amp; EE previous-year questions</title>
   <meta name="description" content="Topic-wise GATE ECE and EE previous-year questions with answers and solutions, 2001 to 2025. Free, no sign-up.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="theme-color" content="#08080e">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
   <link rel="stylesheet" href="css/app.css?v=__BUILD__">
   <script>
     window.BUILD = "__BUILD__";
-    // apply the saved theme before first paint to avoid a flash
+    // apply the saved theme before first paint (dark unless the visitor chose otherwise)
     try {
       var t = JSON.parse(localStorage.getItem("gatepyq:v1")).settings.theme;
-      if (t === "dark" || (t !== "light" && matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.dataset.theme = "dark";
-    } catch (e) { if (matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark"; }
+      document.documentElement.dataset.theme = t === "light" || (t === "auto" && !matchMedia("(prefers-color-scheme: dark)").matches) ? "light" : "dark";
+    } catch (e) {}
   </script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#7c5cff"/><path d="M5 19c3.5 0 3.5-9 7-9s3.5 12 7 12 3.500-8 8-8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="5" cy="19" r="2" fill="#fff"/><circle cx="27" cy="14" r="2" fill="#fff"/></symbol></svg>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="#/"><span class="brand-mark">G</span><span>GATE PYQ</span></a>
+      <a class="brand" href="#/"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#logo"/></svg><span>GATE PYQ</span></a>
       <div class="seg" id="branch-seg" hidden></div>
       <nav class="nav" id="nav" aria-label="Sections"></nav>
       <span class="spacer"></span>
