@@ -455,3 +455,10 @@ body { font-size: 14px; }
   .nav { margin-left: 0; }
   .q-card .nav-row { position: sticky; bottom: 0; background: var(--surface); margin: 18px -16px -16px; padding: 10px 16px; z-index: 5; border-top: 1px solid var(--border); }
 }
+
+/* GATE calculator iframe */
+.calc-frame { position: fixed; right: 18px; bottom: 80px; z-index: 61; width: 480px; height: 400px; max-width: calc(100vw - 24px); max-height: calc(100vh - 100px); display: none; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.calc-frame.open { display: flex; }
+.calc-frame .calc-top { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px 6px 12px; font-weight: 600; font-size: 13px; border-bottom: 1px solid var(--border); }
+.calc-frame .icon-btn { width: 26px; height: 26px; font-size: 18px; line-height: 1; }
+.calc-frame iframe { flex: 1; width: 100%; border: 0; background: #fff; }
