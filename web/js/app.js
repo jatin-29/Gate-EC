@@ -4,7 +4,6 @@ import { loadBranch } from "./data.js";
 import { mountPractice, parseFilters, serialize } from "./practice.js";
 import { landing, branchHome, weightage, analytics, settingsView } from "./views.js";
 import { mountCalculator } from "./calc.js";
-import { notesView, formulasView } from "./notes.js";
 
 const BRANCHES = ["ec", "ee", "in"];
 const root = $("#app");
@@ -37,7 +36,7 @@ function refreshSwitcher() {
   if (!branch) { seg.hidden = true; return; }
   const params = new URLSearchParams(location.hash.split("?")[1] || "");
   const f = view === "practice" ? parseFilters(params) : null;
-  const wsub = ["weightage", "notes", "formulas"].includes(view) ? params.get("s") : null;
+  const wsub = view === "weightage" ? params.get("s") : null;
   const subjects = new Set(f ? [...f.subjects, ...[...f.topics].map((k) => k.split("/")[0])] : wsub ? [wsub] : []);
   const items = [];
   for (const b of BRANCHES) {
@@ -62,11 +61,11 @@ addEventListener("gate:url", refreshSwitcher);
 function chrome(branch, view) {
   current = { branch, view };
   refreshSwitcher();
-  const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["notes", "Notes", "/notes"], ["analytics", "Progress", "/analytics"]];
+  const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["analytics", "Progress", "/analytics"]];
   // the Weightage tab opens the subject you were last practising
   const lv = store.lastVisit();
   const ws = branch && lv && lv.branch === branch && lv.subject ? `?s=${lv.subject}` : "";
-  nav.innerHTML = branch ? items.map(([v, l, p]) => `<a href="#/${branch}${p}${v === "weightage" || v === "notes" ? ws : ""}" class="${v === view ? "on" : ""}">${l}</a>`).join("") : "";
+  nav.innerHTML = branch ? items.map(([v, l, p]) => `<a href="#/${branch}${p}${v === "weightage" ? ws : ""}" class="${v === view ? "on" : ""}">${l}</a>`).join("") : "";
 }
 
 const skeleton = () => `<div class="skel"><i style="width:40%;height:28px"></i><i style="width:65%"></i><div class="skel-grid"><i></i><i></i><i></i></div></div>`;
@@ -106,12 +105,10 @@ async function route() {
     root.innerHTML = skeleton();
     const D = await loadBranch(b);
     if (my !== token) return;
-    const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", notes: "Notes", formulas: "Formula sheet", analytics: "Progress" };
+    const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", analytics: "Progress" };
     document.title = `${titles[view] || "Topics"} · GATE ${b.toUpperCase()} PYQ`;
     if (view === "practice") mountPractice(root, D, params);
     else if (view === "weightage") weightage(root, D, params);
-    else if (view === "notes") await notesView(root, D, params, store.lastVisit());
-    else if (view === "formulas") formulasView(root, D, params, store.lastVisit());
     else if (view === "analytics") analytics(root, D);
     else branchHome(root, D);
   } catch (err) {
