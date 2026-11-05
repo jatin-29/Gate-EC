@@ -462,3 +462,35 @@ body { font-size: 14px; }
 .calc-frame .calc-top { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px 6px 12px; font-weight: 600; font-size: 13px; border-bottom: 1px solid var(--border); }
 .calc-frame .icon-btn { width: 26px; height: 26px; font-size: 18px; line-height: 1; }
 .calc-frame iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+
+/* ---------- notes hub + formula sheets ---------- */
+.notes-set { margin-top: 14px; }
+.notes-head { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+.btn.sm { padding: 4px 10px; font-size: 12.5px; }
+.chapter { padding: 12px 0; border-top: 1px solid var(--border); margin-top: 12px; }
+.topic-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pill { font-size: 12px; padding: 2px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.pill.p-high { color: var(--ok); border-color: var(--ok); }
+.pill.p-medium { color: var(--warn); border-color: var(--warn); }
+.sheets { display: block; }
+.sheet { margin-bottom: 26px; }
+.sheet h2 { font-size: 18px; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 3px solid var(--accent); }
+.ftopic { margin-bottom: 14px; break-inside: avoid; }
+.ftopic h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0 0 4px; }
+.ftable { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ftable th { text-align: left; font-weight: 500; color: var(--muted); padding: 5px 10px 5px 0; width: 34%; vertical-align: middle; border-bottom: 1px solid var(--border); }
+.ftable td { padding: 5px 0; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.ftable .katex { font-size: 1em; }
+.print-title { display: none; }
+@media (min-width: 1000px) { .sheet { column-count: 2; column-gap: 28px; } .sheet h2 { column-span: all; } }
+@media print {
+  :root, :root[data-theme="dark"] { --bg: #fff; --surface: #fff; --surface-2: #fff; --border: #bbb; --text: #000; --muted: #333; --primary: #000; }
+  body { background: #fff; color: #000; font-size: 11px; }
+  .topbar, .site-foot, .calc-fab, .calc-frame, .no-print, .toast { display: none !important; }
+  main { padding: 0; max-width: none; }
+  .print-title { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .sheet { column-count: 2; column-gap: 18px; margin-bottom: 14px; }
+  .sheet h2 { column-span: all; font-size: 14px; }
+  .ftable { font-size: 10.5px; } .ftable th, .ftable td { padding: 2px 4px 2px 0; }
+  .sheet + .sheet { break-before: page; }
+}

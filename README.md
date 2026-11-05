@@ -11,6 +11,11 @@ Topic-wise GATE previous-year questions for **Electronics & Communication (EC)**
 - **Progress**: accuracy by subject, weakest topics, 14-day activity. Backup/restore as JSON in Settings.
 - Dark/light theme, scientific calculator, mobile layout.
 
+## Notes and formula sheets
+
+- **Formula sheets** (`web/js/formulas.js`): original, printable sheets for 14 subjects (about 340 formulas), shared by EC/EE/IN. Open *Notes → Open & print*, or `#/<branch>/formulas?s=all` for every subject. Edit the file to add or fix formulas.
+- **Notes PDFs**: `scripts/import_notes_catalog.py` writes links (not copies) to PrepFusion's short-notes and formula-sheet PDFs per subject and chapter, with topic priority and PYQ counts, into `data/notes/`. Their host rejects non-browser clients, so download `catalog.json` with `curl` and pass its path to the script.
+
 ## Run locally
 
 ```sh

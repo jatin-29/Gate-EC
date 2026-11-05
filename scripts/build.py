@@ -88,6 +88,9 @@ def main():
     shutil.copytree(ROOT / "web", DIST)
     shutil.copytree(ROOT / "data" / "img", DIST / "img")
     (DIST / ".nojekyll").write_text("")
+    (DIST / "data").mkdir(exist_ok=True)
+    for f in (ROOT / "data" / "notes").glob("*.json"):
+        shutil.copyfile(f, DIST / "data" / f"notes-{f.name}")
     total = sum(build_branch(b) for b in BRANCHES)
     version = hashlib.sha1(str(time.time()).encode()).hexdigest()[:8]
     for page in DIST.glob("*.html"):
