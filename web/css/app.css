@@ -475,3 +475,16 @@ body { font-size: 14px; }
 .tag.wr { background: var(--bad-weak); color: var(--bad); margin-right: 4px; }
 .tag.bm { background: var(--warn-weak); color: var(--warn); }
 .sel-banner { padding: 8px 10px; margin-bottom: 12px; border-radius: 8px; background: var(--primary-weak); font-size: 13px; }
+
+/* ---------- badges ---------- */
+#badges-link { font-size: 16px; text-decoration: none; }
+.badge-cat { margin: 22px 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.badge { display: flex; gap: 14px; padding: 12px 14px; align-items: center; opacity: 0.62; }
+.badge.on { opacity: 1; border-color: var(--tier); }
+.medal { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; border: 3px solid var(--tier); background: var(--surface-2); filter: grayscale(1); }
+.badge.on .medal { filter: none; background: color-mix(in srgb, var(--tier) 16%, var(--surface)); }
+.b-body { min-width: 0; flex: 1; }
+.b-body b { font-size: 14px; }
+.b-body .bar { margin: 6px 0 3px; height: 5px; }
+.b-done { color: var(--ok); font-size: 12px; font-weight: 600; margin-top: 4px; }

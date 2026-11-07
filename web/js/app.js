@@ -4,6 +4,7 @@ import { loadBranch } from "./data.js";
 import { mountPractice, parseFilters, serialize } from "./practice.js";
 import { landing, branchHome, weightage, analytics, reviseView, settingsView } from "./views.js";
 import { mountCalculator } from "./calc.js";
+import { badgesView, checkBadges } from "./badges.js";
 
 const BRANCHES = ["ec", "ee", "in"];
 const root = $("#app");
@@ -87,7 +88,7 @@ function fresh() {
   return el;
 }
 
-addEventListener("gate:progress", refreshStreak);
+addEventListener("gate:progress", () => { refreshStreak(); checkBadges(); });
 
 let token = 0;
 async function route() {
@@ -98,6 +99,11 @@ async function route() {
   window.scrollTo({ top: 0 });
   refreshStreak();
   try {
+    if (parts[0] === "badges") {
+      chrome(null, "badges");
+      document.title = "Badges · GATE PYQ";
+      return badgesView(fresh());
+    }
     if (parts[0] === "settings") {
       chrome(null, "settings");
       return settingsView(fresh(), applyTheme);
@@ -131,4 +137,5 @@ async function route() {
 addEventListener("hashchange", route);
 applyTheme();
 mountCalculator();
+setTimeout(checkBadges, 1500); // award badges for work done before this feature existed (silently)
 route();
