@@ -2,7 +2,7 @@ import { $, $$, icons } from "./util.js";
 import * as store from "./store.js";
 import { loadBranch } from "./data.js";
 import { mountPractice, parseFilters, serialize } from "./practice.js";
-import { landing, branchHome, weightage, analytics, settingsView } from "./views.js";
+import { landing, branchHome, weightage, analytics, reviseView, settingsView } from "./views.js";
 import { mountCalculator } from "./calc.js";
 
 const BRANCHES = ["ec", "ee", "in"];
@@ -61,7 +61,7 @@ addEventListener("gate:url", refreshSwitcher);
 function chrome(branch, view) {
   current = { branch, view };
   refreshSwitcher();
-  const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["analytics", "Progress", "/analytics"]];
+  const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["revise", "Revise", "/revise"], ["analytics", "Progress", "/analytics"]];
   // the Weightage tab opens the subject you were last practising
   const lv = store.lastVisit();
   const ws = branch && lv && lv.branch === branch && lv.subject ? `?s=${lv.subject}` : "";
@@ -86,6 +86,8 @@ function fresh() {
   root.replaceChildren(el);
   return el;
 }
+
+addEventListener("gate:progress", refreshStreak);
 
 let token = 0;
 async function route() {
@@ -114,10 +116,11 @@ async function route() {
     root.innerHTML = skeleton();
     const D = await loadBranch(b);
     if (my !== token) return;
-    const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", analytics: "Progress" };
+    const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", revise: "Revise", analytics: "Progress" };
     document.title = `${titles[view] || "Topics"} · GATE ${b.toUpperCase()} PYQ`;
     if (view === "practice") mountPractice(fresh(), D, params);
     else if (view === "weightage") weightage(fresh(), D, params);
+    else if (view === "revise") reviseView(fresh(), D, params);
     else if (view === "analytics") analytics(fresh(), D);
     else branchHome(fresh(), D);
   } catch (err) {

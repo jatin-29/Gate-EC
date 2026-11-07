@@ -462,3 +462,16 @@ body { font-size: 14px; }
 .calc-frame .calc-top { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px 6px 12px; font-weight: 600; font-size: 13px; border-bottom: 1px solid var(--border); }
 .calc-frame .icon-btn { width: 26px; height: 26px; font-size: 18px; line-height: 1; }
 .calc-frame iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+
+/* ---------- revise dashboard ---------- */
+.btn.disabled { opacity: 0.4; pointer-events: none; }
+.btn.sm { padding: 4px 10px; font-size: 12.5px; }
+.notes-head { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+.rv-group { margin-bottom: 12px; border-left: 3px solid var(--accent); }
+.rv-group h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.rv-table { margin-top: 8px; }
+.rv-ref { white-space: nowrap; font-family: var(--mono); font-size: 12.5px; }
+.rv-text { color: var(--muted); font-size: 13px; }
+.tag.wr { background: var(--bad-weak); color: var(--bad); margin-right: 4px; }
+.tag.bm { background: var(--warn-weak); color: var(--warn); }
+.sel-banner { padding: 8px 10px; margin-bottom: 12px; border-radius: 8px; background: var(--primary-weak); font-size: 13px; }

@@ -18,6 +18,7 @@ export function parseFilters(params) {
     types: new Set(csv(params.get("t"))),
     marks: new Set(csv(params.get("m")).map(Number)),
     diffs: new Set(csv(params.get("d")).map(Number)),
+    ids: new Set(csv(params.get("ids"))),
     status: params.get("st") || "all",
     sort: params.get("sort") || "new",
     extra: params.get("x") === "1",
@@ -34,6 +35,7 @@ export function serialize(f) {
   if (f.types.size) p.set("t", [...f.types].join(","));
   if (f.marks.size) p.set("m", [...f.marks].join(","));
   if (f.diffs.size) p.set("d", [...f.diffs].join(","));
+  if (f.ids.size) p.set("ids", [...f.ids].join(","));
   if (f.status !== "all") p.set("st", f.status);
   if (f.sort !== "new") p.set("sort", f.sort);
   if (f.extra) p.set("x", "1");
@@ -77,6 +79,7 @@ export function mountPractice(root, D, params) {
 
   // ---------- filtering ----------
   function matches(q, skipTopics) {
+    if (f.ids.size && !f.ids.has(q.id)) return false;
     if (q.extra && !f.extra) return false;
     if (!skipTopics) {
       if (f.subjects.size && !f.subjects.has(q.s)) return false;
@@ -150,6 +153,7 @@ export function mountPractice(root, D, params) {
     const chip = (attr, val, label, on) => `<button class="chip" ${attr}="${val}" aria-pressed="${on}">${label}</button>`;
     el.innerHTML = `
       <div class="drawer-head"><b>Filters</b><button class="btn primary" data-act="close-filters">Show ${list.length} questions</button></div>
+      ${f.ids.size ? `<div class="sel-banner">Practising ${f.ids.size} selected questions <button class="linkish" data-act="clear-ids">show all</button></div>` : ""}
       <h3>Search</h3>
       <input class="field" id="f-q" type="search" placeholder="Search question text…" value="${esc(f.q)}">
       <h3>Subject &amp; topic</h3>
@@ -417,18 +421,19 @@ export function mountPractice(root, D, params) {
     if (t.dataset.status) { f.status = t.dataset.status; return refreshAll(); }
     switch (t.dataset.act) {
       case "check": return submit();
-      case "reveal": { revealed = true; renderCard(); return; }
+      case "reveal": { revealed = true; if (list[idx].t === "desc") store.touch(); renderCard(); return; }
       case "retry": { const q = list[idx]; store.clearAttempt(q.id); resetWork(); sel = new Set(); natVal = ""; revealed = false; renderCard(); renderPalette(); renderFilters(); return; }
       case "bookmark": { const q = list[idx]; toast(store.toggleBookmark(q.id) ? "Bookmarked" : "Bookmark removed"); renderCard(); renderPalette(); return; }
       case "add-photo": $("#photo-file", root).click(); return;
       case "notes": { const n = $("#notes", root); n.hidden = !n.hidden; if (!n.hidden) { renderPhotos(); $("textarea", n).focus(); } return; }
+      case "clear-ids": f.ids.clear(); return refreshAll();
       case "random": return go(Math.floor(Math.random() * list.length));
       case "prev": return go(idx - 1);
       case "next": return go(idx + 1);
       case "close-filters": $(".filters-col", root).classList.remove("open"); return;
       case "open-filters": $(".filters-col", root).classList.add("open"); return;
       case "reset":
-        f.q = ""; f.subjects.clear(); f.topics.clear(); f.years.clear(); f.types.clear(); f.marks.clear(); f.diffs.clear(); f.status = "all"; f.sort = "new"; f.extra = false;
+        f.q = ""; f.subjects.clear(); f.topics.clear(); f.years.clear(); f.types.clear(); f.marks.clear(); f.diffs.clear(); f.ids.clear(); f.status = "all"; f.sort = "new"; f.extra = false;
         return refreshAll();
     }
   });

@@ -230,6 +230,82 @@ export function analytics(root, D) {
     </div>`;
 }
 
+// ---------- weekly revise dashboard: wrong + bookmarked questions ----------
+const weekStart = (t) => {
+  const d = new Date(t);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); // Monday
+  return d.getTime();
+};
+const WEEK = 7 * 864e5;
+const fmtDay = (t) => new Date(t).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const snippet = (html) =>
+  html
+    .replace(/\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)/g, " ▢ ")   // formulas are too long for a one-line preview
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ").trim().slice(0, 140);
+
+export function reviseView(root, D, params) {
+  const b = D.branch;
+  const mine = (id) => id.startsWith(b + "-") && D.byId.has(id);
+  const attempts = Object.entries(store.allAttempts()).filter(([id]) => mine(id));
+  const bmTimes = store.bookmarkTimes();
+  const marks = store.bookmarks().filter(mine);
+  const thisWeek = weekStart(Date.now());
+  const times = [...attempts.map(([, a]) => a.t), ...marks.map((id) => bmTimes[id]).filter(Boolean)];
+  const oldest = times.length ? weekStart(Math.min(...times)) : thisWeek;
+  const nWeeks = Math.min(12, Math.round((thisWeek - oldest) / WEEK) + 1);
+  const w = params.get("w") === "all" ? "all" : Math.min(Math.max(parseInt(params.get("w") || "0", 10) || 0, 0), nWeeks - 1);
+  const from = w === "all" ? 0 : thisWeek - w * WEEK;
+  const to = w === "all" ? Infinity : from + WEEK;
+  const inRange = (t) => t >= from && t < to;
+
+  const done = attempts.filter(([, a]) => inRange(a.t));
+  const wrong = new Map(done.filter(([, a]) => !a.ok).map(([id, a]) => [id, a.t]));
+  // bookmarks made before bookmark dates were recorded have no date: they only show under "All time"
+  const marked = new Map(marks.filter((id) => (bmTimes[id] ? inRange(bmTimes[id]) : w === "all")).map((id) => [id, bmTimes[id] || 0]));
+  const ids = [...new Set([...wrong.keys(), ...marked.keys()])];
+  const correct = done.length - wrong.size;
+
+  const label = (i) => (i === 0 ? "This week" : i === 1 ? "Last week" : `${fmtDay(thisWeek - i * WEEK)} – ${fmtDay(thisWeek - i * WEEK + WEEK - 864e5)}`);
+  const weekChips = [...Array(nWeeks).keys()].map((i) => `<a class="chip" aria-pressed="${w === i}" href="#/${b}/revise?w=${i}">${label(i)}</a>`).join("") + `<a class="chip" aria-pressed="${w === "all"}" href="#/${b}/revise?w=all">All time</a>`;
+  const open = (list) => `#/${b}/practice?ids=${list.join(",")}`;
+
+  const bySubject = new Map();
+  for (const id of ids) {
+    const q = D.byId.get(id);
+    (bySubject.get(q.s) || bySubject.set(q.s, []).get(q.s)).push(q);
+  }
+  const groups = D.subjects.filter((s) => bySubject.has(s.id)).map((s) => {
+    const rows = bySubject.get(s.id).map((q) => `<tr>
+        <td class="rv-ref"><a href="#/${b}/practice?ids=${q.id}">${esc(q.paper.title.replace("GATE " + b.toUpperCase() + " ", ""))} · ${esc(q.ref)}</a></td>
+        <td>${wrong.has(q.id) ? '<span class="tag wr">Wrong</span>' : ""}${marked.has(q.id) ? '<span class="tag bm">★ Bookmarked</span>' : ""}</td>
+        <td class="rv-text">${esc(snippet(q.q)) || "(figure question)"}</td></tr>`).join("");
+    return `<section class="card pad rv-group" style="--accent:${s.color}">
+      <div class="notes-head"><h3><span class="dot2"></span> ${esc(s.name)} <span class="muted">· ${bySubject.get(s.id).length}</span></h3>
+      <a class="btn sm" href="${open(bySubject.get(s.id).map((q) => q.id))}">Practise these</a></div>
+      <table class="table rv-table"><tbody>${rows}</tbody></table></section>`;
+  }).join("");
+
+  root.innerHTML = `
+    <h1 class="page-title">Revise · GATE ${b.toUpperCase()}</h1>
+    <p class="page-sub">The questions you got wrong or bookmarked, week by week, so you can practise only those. A question you later answer correctly drops off the wrong list.</p>
+    <div class="chips subj-chips">${weekChips}</div>
+    <div class="stats-strip">
+      <div class="card"><div class="stat"><b>${done.length}</b><span>Questions done</span></div></div>
+      <div class="card"><div class="stat"><b>${correct}</b><span>Correct</span></div></div>
+      <div class="card"><div class="stat"><b>${wrong.size}</b><span>Still wrong</span></div></div>
+      <div class="card"><div class="stat"><b>${marked.size}</b><span>Bookmarked</span></div></div>
+    </div>
+    <div class="actions" style="margin-bottom:16px">
+      <a class="btn primary ${ids.length ? "" : "disabled"}" href="${ids.length ? open(ids) : "#"}">Practise all ${ids.length}</a>
+      <a class="btn ${wrong.size ? "" : "disabled"}" href="${wrong.size ? open([...wrong.keys()]) : "#"}">Wrong only (${wrong.size})</a>
+      <a class="btn ${marked.size ? "" : "disabled"}" href="${marked.size ? open([...marked.keys()]) : "#"}">Bookmarked only (${marked.size})</a>
+    </div>
+    ${groups || `<p class="empty">${w === "all" ? "Nothing wrong or bookmarked yet." : "Nothing wrong or bookmarked in this period. Questions you answer wrongly or bookmark in Practice will show up here."}</p>`}`;
+}
+
 // ---------- settings ----------
 export function settingsView(root, applyTheme) {
   const th = store.settings().theme;

@@ -1,7 +1,7 @@
 // Progress lives in localStorage only; nothing is sent anywhere.
 const KEY = "gatepyq:v1";
 
-const blank = () => ({ attempts: {}, bookmarks: [], notes: {}, daily: {}, settings: { theme: "dark" } });
+const blank = () => ({ attempts: {}, bookmarks: [], bookmarkTimes: {}, notes: {}, daily: {}, settings: { theme: "dark" } });
 
 function load() {
   try {
@@ -13,6 +13,15 @@ function load() {
 }
 
 let db = load();
+if (!db.bookmarkTimes) db.bookmarkTimes = {};
+
+// days are counted in the user's local time, not UTC (UTC made late-night and early-morning IST answers land on the wrong day)
+const pad = (n) => String(n).padStart(2, "0");
+export const dayKey = (t = Date.now()) => {
+  const d = new Date(t);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+const changed = () => window.dispatchEvent(new Event("gate:progress"));
 
 export function persist() {
   try {
@@ -35,21 +44,29 @@ export function statusOf(id) {
 export function record(id, ok, answer) {
   const prev = db.attempts[id];
   db.attempts[id] = { ok, a: answer, t: Date.now(), n: (prev?.n || 0) + 1 };
-  const day = new Date().toISOString().slice(0, 10);
+  touch();
+}
+
+// count a day of activity (checking an answer, revealing a descriptive answer)
+export function touch() {
+  const day = dayKey();
   db.daily[day] = (db.daily[day] || 0) + 1;
   persist();
+  changed();
 }
 
 export function clearAttempt(id) {
   delete db.attempts[id];
   persist();
+  changed();
 }
 
 export function toggleBookmark(id) {
   const i = db.bookmarks.indexOf(id);
-  if (i >= 0) db.bookmarks.splice(i, 1);
-  else db.bookmarks.push(id);
+  if (i >= 0) { db.bookmarks.splice(i, 1); delete db.bookmarkTimes[id]; }
+  else { db.bookmarks.push(id); db.bookmarkTimes[id] = Date.now(); }
   persist();
+  changed();
   return i < 0;
 }
 
@@ -68,12 +85,13 @@ export function importData(text, mode = "merge") {
   const inc = JSON.parse(text);
   if (inc.app !== "gate-pyq" || typeof inc.attempts !== "object") throw new Error("Not a GATE PYQ backup file");
   if (mode === "replace") {
-    db = { ...blank(), attempts: inc.attempts, bookmarks: inc.bookmarks || [], notes: inc.notes || {}, daily: inc.daily || {}, settings: db.settings };
+    db = { ...blank(), attempts: inc.attempts, bookmarks: inc.bookmarks || [], bookmarkTimes: inc.bookmarkTimes || {}, notes: inc.notes || {}, daily: inc.daily || {}, settings: db.settings };
   } else {
     for (const [id, a] of Object.entries(inc.attempts)) {
       if (!db.attempts[id] || a.t > db.attempts[id].t) db.attempts[id] = a;
     }
     db.bookmarks = [...new Set([...db.bookmarks, ...(inc.bookmarks || [])])];
+    db.bookmarkTimes = { ...(inc.bookmarkTimes || {}), ...db.bookmarkTimes };
     Object.assign(db.notes, inc.notes || {});
     for (const [d, n] of Object.entries(inc.daily || {})) db.daily[d] = Math.max(db.daily[d] || 0, n);
   }
@@ -83,6 +101,7 @@ export function importData(text, mode = "merge") {
 export function resetProgress(prefix = "") {
   for (const id of Object.keys(db.attempts)) if (id.startsWith(prefix)) delete db.attempts[id];
   db.bookmarks = db.bookmarks.filter((id) => !id.startsWith(prefix));
+  for (const id of Object.keys(db.bookmarkTimes)) if (id.startsWith(prefix)) delete db.bookmarkTimes[id];
   for (const id of Object.keys(db.notes)) if (id.startsWith(prefix)) delete db.notes[id];
   persist();
 }
@@ -106,13 +125,14 @@ export function setLastVisit(v) {
   persist();
 }
 
-// consecutive days with at least one checked answer, counting back from today (or yesterday)
+// consecutive days with activity, counting back from today (or yesterday if nothing yet today)
 export function streak() {
-  const day = (d) => new Date(d).toISOString().slice(0, 10);
-  let d = Date.now();
-  if (!db.daily[day(d)]) d -= 864e5;
+  const d = new Date();
+  d.setHours(12, 0, 0, 0);
+  if (!db.daily[dayKey(d)]) d.setDate(d.getDate() - 1);
   let n = 0;
-  while (db.daily[day(d)]) { n++; d -= 864e5; }
+  while (db.daily[dayKey(d)]) { n++; d.setDate(d.getDate() - 1); }
   return n;
 }
-export const todayCount = () => db.daily[new Date().toISOString().slice(0, 10)] || 0;
+export const todayCount = () => db.daily[dayKey()] || 0;
+export const bookmarkTimes = () => db.bookmarkTimes;
