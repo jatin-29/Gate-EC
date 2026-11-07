@@ -232,7 +232,7 @@ export function mountPractice(root, D, params) {
               const L = "ABCD"[i];
               let cls = sel.has(L) ? "sel" : "";
               if (locked && q.a) cls = correctSet.has(L) ? "right" : sel.has(L) ? "wrong" : "";
-              return `<button class="opt ${cls}" data-opt="${L}" ${locked ? "disabled" : ""}><span class="L">${L}</span><span class="T">${o}</span></button>`;
+              return `<button class="opt ${cls}" data-opt="${L}" ${locked ? "disabled" : ""}><span class="L">${L}</span><span class="T">${o}</span><kbd class="optkey">${i + 1}</kbd></button>`;
             })
             .join("")}</div>${q.t === "msq" ? `<div class="hint">One or more options may be correct (MSQ). Select all that apply.</div>` : ""}`;
     let verdict = "";
@@ -262,11 +262,11 @@ export function mountPractice(root, D, params) {
       <div class="q-body" id="qbody">${q.q}</div>
       ${opts}
       <div class="actions">
-        ${locked ? "" : `${q.t === "desc" ? "" : `<button class="btn primary" data-act="check" ${q.t === "nat" ? "" : sel.size ? "" : "disabled"}>Check answer</button>`}<button class="btn" data-act="reveal">Show answer</button>`}
+        ${locked ? "" : `${q.t === "desc" ? "" : `<button class="btn primary" data-act="check" ${q.t === "nat" ? "" : sel.size ? "" : "disabled"}>Check answer <kbd>Enter</kbd></button>`}<button class="btn" data-act="reveal">Show answer <kbd>S</kbd></button>`}
         ${done ? `<button class="btn" data-act="retry">Try again</button>` : ""}
         ${locked && !done ? `<button class="btn" data-act="retry">Hide answer</button>` : ""}
-        <button class="btn bm ${bm ? "on" : ""}" data-act="bookmark">${bm ? "★ Bookmarked" : "☆ Bookmark"}</button>
-        <button class="btn" data-act="notes" id="notes-btn">✎ Notes${store.noteOf(q.id) || photos.has(q.id) ? " •" : ""}</button>
+        <button class="btn bm ${bm ? "on" : ""}" data-act="bookmark">${bm ? "★ Bookmarked" : "☆ Bookmark"} <kbd>B</kbd></button>
+        <button class="btn" data-act="notes" id="notes-btn" title="Shortcut: T">✎ Notes${store.noteOf(q.id) || photos.has(q.id) ? " •" : ""}</button>
       </div>
       ${verdict}
       <div id="exp"></div>
@@ -279,10 +279,11 @@ export function mountPractice(root, D, params) {
         </div>
         <div class="photos" id="photos"></div>
       </div>
+      <div class="shortcut-line hint"><kbd>1</kbd>–<kbd>4</kbd> option · <kbd>Enter</kbd> check · <kbd>S</kbd> answer · <kbd>B</kbd> bookmark · <kbd>N</kbd>/<kbd>P</kbd> next/prev · <button class="linkish" data-act="help">all shortcuts <kbd>?</kbd></button></div>
       <div class="nav-row">
-        <button class="btn" data-act="prev" ${idx === 0 ? "disabled" : ""}>← Previous</button>
+        <button class="btn" data-act="prev" ${idx === 0 ? "disabled" : ""}>← Previous <kbd>P</kbd></button>
         <span class="pos">${idx + 1} / ${list.length} · <button class="linkish" data-act="random">random</button></span>
-        <button class="btn" data-act="next" ${idx >= list.length - 1 ? "disabled" : ""}>Next →</button>
+        <button class="btn" data-act="next" ${idx >= list.length - 1 ? "disabled" : ""}>Next → <kbd>N</kbd></button>
       </div>`;
     typeset(el);
     startTimer(locked);
@@ -427,6 +428,7 @@ export function mountPractice(root, D, params) {
       case "add-photo": $("#photo-file", root).click(); return;
       case "notes": { const n = $("#notes", root); n.hidden = !n.hidden; if (!n.hidden) { renderPhotos(); $("textarea", n).focus(); } return; }
       case "clear-ids": f.ids.clear(); return refreshAll();
+      case "help": return showHelp();
       case "random": return go(Math.floor(Math.random() * list.length));
       case "prev": return go(idx - 1);
       case "next": return go(idx + 1);
@@ -460,20 +462,57 @@ export function mountPractice(root, D, params) {
     }
   });
 
+  // Keyboard shortcuts (also listed in the "?" help): 1-4 option, Enter check, S show answer,
+  // B bookmark, N / → next, P / ← previous, T notes, R random, ? help.
+  function toggleAnswer() {
+    const q = list[idx];
+    if (!q || store.attemptOf(q.id)) return;
+    revealed = !revealed;
+    if (revealed && q.t === "desc") store.touch();
+    renderCard();
+  }
+  function toggleBookmark() {
+    const q = list[idx];
+    if (!q) return;
+    toast(store.toggleBookmark(q.id) ? "Bookmarked" : "Bookmark removed");
+    renderCard();
+    renderPalette();
+  }
+  function showHelp() {
+    const o = document.createElement("div");
+    o.className = "lightbox help";
+    const rows = [["1 – 4", "Select option (MSQ: toggle)"], ["Enter", "Check answer · next question once answered"], ["S", "Show / hide answer"], ["B", "Bookmark"], ["N or →", "Next question"], ["P or ←", "Previous question"], ["T", "Open notes"], ["R", "Random question"], ["?", "This help"]];
+    o.innerHTML = `<div class="card pad" onclick="event.stopPropagation()"><h3 style="margin-bottom:10px">Keyboard shortcuts</h3><table class="table"><tbody>${rows.map(([k, d]) => `<tr><td><kbd>${k}</kbd></td><td>${d}</td></tr>`).join("")}</tbody></table><p class="hint" style="margin-top:10px">Click anywhere or press Esc to close. Shortcuts pause while you type in a box.</p></div>`;
+    const close = () => { o.remove(); document.removeEventListener("keydown", onEsc, true); };
+    const onEsc = (e) => { if (e.key === "Escape" || e.key === "?") { e.stopPropagation(); close(); } };
+    o.onclick = close;
+    document.addEventListener("keydown", onEsc, true);
+    document.body.append(o);
+  }
   const onKey = (e) => {
     if (!root.isConnected) return document.removeEventListener("keydown", onKey);
-    if (e.target.matches("input, textarea, select") && !(e.target.id === "nat" && e.key === "Enter")) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.matches("input, textarea, select")) {
+      if (e.target.id === "nat" && e.key === "Enter") return void submit();
+      if (e.key === "Escape") e.target.blur();
+      return;
+    }
     const q = list[idx];
-    if (e.key === "ArrowRight") go(idx + 1);
-    else if (e.key === "ArrowLeft") go(idx - 1);
-    else if (e.key === "Enter" && q) { revealed ? go(idx + 1) : submit(); }
-    else if (q && !revealed && q.o && /^[1-4a-dA-D]$/.test(e.key)) {
-      const L = "ABCD"[/\d/.test(e.key) ? +e.key - 1 : e.key.toUpperCase().charCodeAt(0) - 65];
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (k === "ArrowRight" || k === "n") go(idx + 1);
+    else if (k === "ArrowLeft" || k === "p") go(idx - 1);
+    else if (k === "Enter" && q) revealed ? go(idx + 1) : submit();
+    else if (k === "s") toggleAnswer();
+    else if (k === "b") toggleBookmark();
+    else if (k === "t") { const n = $("#notes", root); if (n) { n.hidden = !n.hidden; if (!n.hidden) { renderPhotos(); $("textarea", n).focus(); e.preventDefault(); } } }
+    else if (k === "r" && list.length) go(Math.floor(Math.random() * list.length));
+    else if (k === "?") showHelp();
+    else if (q && !revealed && q.o && /^[1-4]$/.test(k) && +k <= q.o.length) {
+      const L = "ABCD"[+k - 1];
       if (q.t === "msq") sel.has(L) ? sel.delete(L) : sel.add(L);
       else sel = new Set([L]);
       renderCard();
-    } else if (e.key.toLowerCase() === "b" && q) { toast(store.toggleBookmark(q.id) ? "Bookmarked" : "Bookmark removed"); renderCard(); renderPalette(); }
+    }
   };
   document.addEventListener("keydown", onKey);
 
