@@ -78,6 +78,15 @@ function refreshStreak() {
   el.title = `${n}-day streak · ${store.todayCount()} answers checked today`;
 }
 
+// Every view gets a brand-new container. Views attach their click/change/paste listeners to it, so
+// reusing #app would stack the listeners of earlier visits (e.g. an EC practice page still answering
+// clicks after you switched to EE, and recording the answer against the EC question as well).
+function fresh() {
+  const el = document.createElement("div");
+  root.replaceChildren(el);
+  return el;
+}
+
 let token = 0;
 async function route() {
   const my = ++token;
@@ -89,14 +98,14 @@ async function route() {
   try {
     if (parts[0] === "settings") {
       chrome(null, "settings");
-      return settingsView(root, applyTheme);
+      return settingsView(fresh(), applyTheme);
     }
     if (!BRANCHES.includes(parts[0])) {
       chrome(null);
       document.title = "GATE PYQ — EC & EE previous-year questions";
       root.innerHTML = skeleton();
       const all = await Promise.all(BRANCHES.map(loadBranch));
-      if (my === token) landing(root, all);
+      if (my === token) landing(fresh(), all);
       return;
     }
     const b = parts[0];
@@ -107,10 +116,10 @@ async function route() {
     if (my !== token) return;
     const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", analytics: "Progress" };
     document.title = `${titles[view] || "Topics"} · GATE ${b.toUpperCase()} PYQ`;
-    if (view === "practice") mountPractice(root, D, params);
-    else if (view === "weightage") weightage(root, D, params);
-    else if (view === "analytics") analytics(root, D);
-    else branchHome(root, D);
+    if (view === "practice") mountPractice(fresh(), D, params);
+    else if (view === "weightage") weightage(fresh(), D, params);
+    else if (view === "analytics") analytics(fresh(), D);
+    else branchHome(fresh(), D);
   } catch (err) {
     root.innerHTML = `<div class="empty"><h3>Something went wrong</h3><p>${String(err.message).replace(/</g, "&lt;")}</p><button class="btn" onclick="location.reload()">Reload</button></div>`;
   }
