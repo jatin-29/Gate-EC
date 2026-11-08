@@ -6,6 +6,7 @@ import { landing, branchHome, weightage, analytics, reviseView, settingsView } f
 import { mountCalculator } from "./calc.js";
 import { showShortcuts } from "./shortcuts.js";
 import { badgesView, checkBadges } from "./badges.js";
+import { fastView } from "./fast.js";
 
 const BRANCHES = ["ec", "ee", "in"];
 const root = $("#app");
@@ -63,7 +64,7 @@ addEventListener("gate:url", refreshSwitcher);
 function chrome(branch, view) {
   current = { branch, view };
   refreshSwitcher();
-  const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["revise", "Revise", "/revise"], ["analytics", "Progress", "/analytics"]];
+  const items = [["home", "Topics", ""], ["practice", "Practice", "/practice"], ["weightage", "Weightage", "/weightage"], ["revise", "Revise", "/revise"], ["fast", "⚡ Fast track", "/fast"], ["analytics", "Progress", "/analytics"]];
   // the Weightage tab opens the subject you were last practising
   const lv = store.lastVisit();
   const ws = branch && lv && lv.branch === branch && lv.subject ? `?s=${lv.subject}` : "";
@@ -123,11 +124,12 @@ async function route() {
     root.innerHTML = skeleton();
     const D = await loadBranch(b);
     if (my !== token) return;
-    const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", revise: "Revise", analytics: "Progress" };
+    const titles = { home: "Topics", practice: "Practice", weightage: "Topic weightage", revise: "Revise", fast: "Fast track", analytics: "Progress" };
     document.title = `${titles[view] || "Topics"} · GATE ${b.toUpperCase()} PYQ`;
     if (view === "practice") mountPractice(fresh(), D, params);
     else if (view === "weightage") weightage(fresh(), D, params);
     else if (view === "revise") reviseView(fresh(), D, params);
+    else if (view === "fast") fastView(fresh(), D, params);
     else if (view === "analytics") analytics(fresh(), D);
     else branchHome(fresh(), D);
   } catch (err) {

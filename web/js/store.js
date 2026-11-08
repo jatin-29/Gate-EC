@@ -1,7 +1,7 @@
 // Progress lives in localStorage only; nothing is sent anywhere.
 const KEY = "gatepyq:v1";
 
-const blank = () => ({ attempts: {}, badges: {}, bookmarks: [], bookmarkTimes: {}, notes: {}, daily: {}, settings: { theme: "dark" } });
+const blank = () => ({ attempts: {}, fast: [], badges: {}, bookmarks: [], bookmarkTimes: {}, notes: {}, daily: {}, settings: { theme: "dark" } });
 
 function load() {
   try {
@@ -15,6 +15,7 @@ function load() {
 let db = load();
 if (!db.bookmarkTimes) db.bookmarkTimes = {};
 if (!db.badges) db.badges = {};
+if (!db.fast) db.fast = [];
 
 // days are counted in the user's local time, not UTC (UTC made late-night and early-morning IST answers land on the wrong day)
 const pad = (n) => String(n).padStart(2, "0");
@@ -86,13 +87,15 @@ export function importData(text, mode = "merge") {
   const inc = JSON.parse(text);
   if (inc.app !== "gate-pyq" || typeof inc.attempts !== "object") throw new Error("Not a GATE PYQ backup file");
   if (mode === "replace") {
-    db = { ...blank(), attempts: inc.attempts, badges: inc.badges || {}, bookmarks: inc.bookmarks || [], bookmarkTimes: inc.bookmarkTimes || {}, notes: inc.notes || {}, daily: inc.daily || {}, settings: db.settings };
+    db = { ...blank(), attempts: inc.attempts, fast: inc.fast || [], badges: inc.badges || {}, bookmarks: inc.bookmarks || [], bookmarkTimes: inc.bookmarkTimes || {}, notes: inc.notes || {}, daily: inc.daily || {}, settings: db.settings };
   } else {
     for (const [id, a] of Object.entries(inc.attempts)) {
       if (!db.attempts[id] || a.t > db.attempts[id].t) db.attempts[id] = a;
     }
     db.bookmarks = [...new Set([...db.bookmarks, ...(inc.bookmarks || [])])];
     db.badges = { ...(inc.badges || {}), ...db.badges };
+    const seen = new Set(db.fast.map((x) => x.t));
+    db.fast = [...db.fast, ...(inc.fast || []).filter((x) => !seen.has(x.t))].sort((a, b) => a.t - b.t);
     db.bookmarkTimes = { ...(inc.bookmarkTimes || {}), ...db.bookmarkTimes };
     Object.assign(db.notes, inc.notes || {});
     for (const [d, n] of Object.entries(inc.daily || {})) db.daily[d] = Math.max(db.daily[d] || 0, n);
@@ -104,6 +107,7 @@ export function resetProgress(prefix = "") {
   for (const id of Object.keys(db.attempts)) if (id.startsWith(prefix)) delete db.attempts[id];
   db.bookmarks = db.bookmarks.filter((id) => !id.startsWith(prefix));
   for (const id of Object.keys(db.bookmarkTimes)) if (id.startsWith(prefix)) delete db.bookmarkTimes[id];
+  db.fast = db.fast.filter((x) => !(x.branch + "-").startsWith(prefix));
   for (const id of Object.keys(db.notes)) if (id.startsWith(prefix)) delete db.notes[id];
   persist();
 }
@@ -159,4 +163,13 @@ export function longestStreak() {
     best = Math.max(best, run);
   }
   return best;
+}
+
+// Fast-track sessions: [{t, branch, n, correct, wrong, skipped, secs, mode}], newest last (kept to the last 40)
+export const fastSessions = () => db.fast;
+export function addFastSession(sess) {
+  db.fast.push(sess);
+  if (db.fast.length > 40) db.fast.shift();
+  persist();
+  window.dispatchEvent(new Event("gate:progress"));
 }

@@ -44,7 +44,26 @@ export function serialize(f) {
   return p.toString();
 }
 
-function shuffled(arr, seed) {
+export function matchesFilter(q, f, skipTopics) {
+  if (f.ids.size && !f.ids.has(q.id)) return false;
+  if (q.extra && !f.extra) return false;
+  if (!skipTopics) {
+    if (f.subjects.size && !f.subjects.has(q.s)) return false;
+    if (f.topics.size && !f.topics.has(q.tk)) return false;
+  }
+  if (f.years.size && !(q.year && f.years.has(q.year))) return false;
+  if (f.types.size && !f.types.has(q.t)) return false;
+  if (f.marks.size && !f.marks.has(q.m)) return false;
+  if (f.diffs.size && !f.diffs.has(q.d)) return false;
+  if (f.q && !f.q.toLowerCase().split(/\s+/).every((w) => q.hay.includes(w))) return false;
+  if (f.status !== "all") {
+    const st = store.statusOf(q.id);
+    if (f.status === "bookmarked" ? !store.isBookmarked(q.id) : f.status === "noted" ? !(store.noteOf(q.id) || photos.has(q.id)) : st !== f.status) return false;
+  }
+  return true;
+}
+
+export function shuffled(arr, seed) {
   const a = arr.slice();
   let s = seed;
   const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
@@ -79,24 +98,7 @@ export function mountPractice(root, D, params) {
     </div>`;
 
   // ---------- filtering ----------
-  function matches(q, skipTopics) {
-    if (f.ids.size && !f.ids.has(q.id)) return false;
-    if (q.extra && !f.extra) return false;
-    if (!skipTopics) {
-      if (f.subjects.size && !f.subjects.has(q.s)) return false;
-      if (f.topics.size && !f.topics.has(q.tk)) return false;
-    }
-    if (f.years.size && !(q.year && f.years.has(q.year))) return false;
-    if (f.types.size && !f.types.has(q.t)) return false;
-    if (f.marks.size && !f.marks.has(q.m)) return false;
-    if (f.diffs.size && !f.diffs.has(q.d)) return false;
-    if (f.q && !f.q.toLowerCase().split(/\s+/).every((w) => q.hay.includes(w))) return false;
-    if (f.status !== "all") {
-      const st = store.statusOf(q.id);
-      if (f.status === "bookmarked" ? !store.isBookmarked(q.id) : f.status === "noted" ? !(store.noteOf(q.id) || photos.has(q.id)) : st !== f.status) return false;
-    }
-    return true;
-  }
+  const matches = (q, skipTopics) => matchesFilter(q, f, skipTopics);
 
   function sortList(arr) {
     if (f.sort === "rand") return shuffled(arr, seed);
@@ -155,6 +157,7 @@ export function mountPractice(root, D, params) {
     el.innerHTML = `
       <div class="drawer-head"><b>Filters</b><button class="btn primary" data-act="close-filters">Show ${list.length} questions</button></div>
       ${f.ids.size ? `<div class="sel-banner">Practising ${f.ids.size} selected questions <button class="linkish" data-act="clear-ids">show all</button></div>` : ""}
+      <a class="btn fast-btn" href="#/${branch}/fast?${serialize({ ...f, id: '' })}">⚡ Fast track these</a>
       <h3>Search</h3>
       <input class="field" id="f-q" type="search" placeholder="Search question text…" value="${esc(f.q)}">
       <h3>Subject &amp; topic</h3>

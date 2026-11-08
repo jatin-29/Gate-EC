@@ -29,6 +29,8 @@ const SIMPLE = [
   ["marathon-20", "Skills", "silver", "⚡", "Marathon", "Check 20 answers in a single day", (s) => s.bestDay, 20],
   ["paper", "Skills", "gold", "📄", "Paper Finisher", "Attempt every question of a full GATE paper", (s) => s.papers, 1],
   ["all-branches", "Skills", "special", "🔀", "Triple Threat", "Solve 10+ questions in each of EC, EE and IN", (s) => Math.min(...BRANCHES.map((b) => s.byBranch[b] || 0)), 10],
+  ["fast-5", "Skills", "silver", "⚡", "Speed Runner", "Complete 5 Fast-track sessions", (s) => s.fast, 5],
+  ["fast-sharp", "Skills", "gold", "🏎️", "Lightning Round", "Finish a Fast-track session of 10+ questions with 80%+ accuracy", (s) => s.fastSharp, 1],
   // habits
   ["bookmarks-10", "Habits", "bronze", "★", "Collector", "Bookmark 10 questions", (s) => s.bookmarks, 10],
   ["notes-5", "Habits", "bronze", "✎", "Note Taker", "Write notes on 5 questions", (s) => s.notes, 5],
@@ -66,6 +68,8 @@ export async function stats() {
   st.bookmarks = store.bookmarks().length;
   st.notes = store.noteCount();
   st.photos = photos.total();
+  st.fast = store.fastSessions().length;
+  st.fastSharp = store.fastSessions().some((x) => x.n >= 10 && x.correct + x.wrong > 0 && x.correct / (x.correct + x.wrong) >= 0.8) ? 1 : 0;
   for (const b of BRANCHES) for (const s of data[b].subjects) st.subjectNames[s.id] = s.name;
   return st;
 }
