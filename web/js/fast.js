@@ -159,9 +159,14 @@ export function fastView(root, D, params) {
       const ok = status === "correct";
       const v = $("#f-verdict", root);
       const reveal = q.t === "msq" ? new Set(q.a) : new Set(Array.isArray(q.a) ? q.a : q.a && q.t !== "nat" ? [q.a] : []);
-      root.querySelectorAll(".opt").forEach((o) => { o.disabled = true; if (reveal.has(o.dataset.opt)) o.classList.add("right"); else if (sel.has(o.dataset.opt)) o.classList.add("wrong"); });
+      // a skipped / timed-out question never reveals its answer; it stays for later practice
+      root.querySelectorAll(".opt").forEach((o) => {
+        o.disabled = true;
+        if (status === "skipped") return;
+        if (reveal.has(o.dataset.opt)) o.classList.add("right"); else if (sel.has(o.dataset.opt)) o.classList.add("wrong");
+      });
       v.innerHTML = status === "skipped"
-        ? `<div class="verdict info">${given === "timeup" ? "⏱ Time up" : "Skipped"} — answer: <b>${esc(answerText(q))}</b></div>`
+        ? `<div class="verdict info">${given === "timeup" ? "⏱ Time up" : "Skipped"} — no answer given</div>`
         : ok ? `<div class="verdict ok">✓ Correct (${secs}s)</div>` : `<div class="verdict bad">✗ Wrong — answer: <b>${esc(answerText(q))}</b> (${secs}s)</div>`;
       v.insertAdjacentHTML("beforeend", `<div class="actions" style="margin-top:10px"><button class="btn primary" data-act="next">${i + 1 >= qs.length ? "Finish" : "Next"} <kbd>Enter</kbd></button></div>`);
       if (cfg.auto) nextTimer = setTimeout(advance, ok ? 700 : status === "skipped" ? 1800 : 2200);
