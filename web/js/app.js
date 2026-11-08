@@ -4,6 +4,7 @@ import { loadBranch } from "./data.js";
 import { mountPractice, parseFilters, serialize } from "./practice.js";
 import { landing, branchHome, weightage, analytics, reviseView, settingsView } from "./views.js";
 import { mountCalculator } from "./calc.js";
+import { showShortcuts } from "./shortcuts.js";
 import { badgesView, checkBadges } from "./badges.js";
 
 const BRANCHES = ["ec", "ee", "in"];
@@ -136,6 +137,12 @@ async function route() {
 
 addEventListener("hashchange", route);
 applyTheme();
+$("#keys-btn").onclick = showShortcuts;
+// "?" opens the shortcut list anywhere (the Practice page handles its own keys)
+addEventListener("keydown", (e) => {
+  if (e.key !== "?" || current.view === "practice" || e.target.matches("input, textarea, select")) return;
+  showShortcuts();
+});
 mountCalculator();
 setTimeout(checkBadges, 1500); // award badges for work done before this feature existed (silently)
 route();

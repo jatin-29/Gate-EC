@@ -1,6 +1,7 @@
 import { esc, $, $$, typeset, toast } from "./util.js";
 import * as store from "./store.js";
 import * as photos from "./photos.js";
+import { showShortcuts } from "./shortcuts.js";
 import { loadExplanations, checkAnswer, answerText } from "./data.js";
 
 const STATUSES = [["all", "All"], ["unattempted", "Unattempted"], ["correct", "Correct"], ["incorrect", "Incorrect"], ["bookmarked", "Bookmarked"], ["noted", "With notes"]];
@@ -428,7 +429,7 @@ export function mountPractice(root, D, params) {
       case "add-photo": $("#photo-file", root).click(); return;
       case "notes": { const n = $("#notes", root); n.hidden = !n.hidden; if (!n.hidden) { renderPhotos(); $("textarea", n).focus(); } return; }
       case "clear-ids": f.ids.clear(); return refreshAll();
-      case "help": return showHelp();
+      case "help": return showShortcuts();
       case "random": return go(Math.floor(Math.random() * list.length));
       case "prev": return go(idx - 1);
       case "next": return go(idx + 1);
@@ -478,17 +479,6 @@ export function mountPractice(root, D, params) {
     renderCard();
     renderPalette();
   }
-  function showHelp() {
-    const o = document.createElement("div");
-    o.className = "lightbox help";
-    const rows = [["1 – 4", "Select option (MSQ: toggle)"], ["Enter", "Check answer · next question once answered"], ["S", "Show / hide answer"], ["B", "Bookmark"], ["N or →", "Next question"], ["P or ←", "Previous question"], ["T", "Open notes"], ["R", "Random question"], ["?", "This help"]];
-    o.innerHTML = `<div class="card pad" onclick="event.stopPropagation()"><h3 style="margin-bottom:10px">Keyboard shortcuts</h3><table class="table"><tbody>${rows.map(([k, d]) => `<tr><td><kbd>${k}</kbd></td><td>${d}</td></tr>`).join("")}</tbody></table><p class="hint" style="margin-top:10px">Click anywhere or press Esc to close. Shortcuts pause while you type in a box.</p></div>`;
-    const close = () => { o.remove(); document.removeEventListener("keydown", onEsc, true); };
-    const onEsc = (e) => { if (e.key === "Escape" || e.key === "?") { e.stopPropagation(); close(); } };
-    o.onclick = close;
-    document.addEventListener("keydown", onEsc, true);
-    document.body.append(o);
-  }
   const onKey = (e) => {
     if (!root.isConnected) return document.removeEventListener("keydown", onKey);
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -506,7 +496,7 @@ export function mountPractice(root, D, params) {
     else if (k === "b") toggleBookmark();
     else if (k === "t") { const n = $("#notes", root); if (n) { n.hidden = !n.hidden; if (!n.hidden) { renderPhotos(); $("textarea", n).focus(); e.preventDefault(); } } }
     else if (k === "r" && list.length) go(Math.floor(Math.random() * list.length));
-    else if (k === "?") showHelp();
+    else if (k === "?") showShortcuts();
     else if (q && !revealed && q.o && /^[1-4]$/.test(k) && +k <= q.o.length) {
       const L = "ABCD"[+k - 1];
       if (q.t === "msq") sel.has(L) ? sel.delete(L) : sel.add(L);

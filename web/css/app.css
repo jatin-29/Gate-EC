@@ -498,3 +498,6 @@ kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 
 .lightbox.help { cursor: default; }
 .lightbox.help .card { max-width: 420px; width: 100%; }
 @media (max-width: 820px), (hover: none) { .shortcut-line, .btn kbd, .opt .optkey { display: none; } }
+
+#keys-btn { font-size: 16px; }
+@media (max-width: 820px), (hover: none) { #keys-btn { display: none; } }

@@ -2,6 +2,7 @@ import { esc, $, $$, pct, toast, icons } from "./util.js";
 import * as store from "./store.js";
 import { subjectArt } from "./art.js";
 import * as photos from "./photos.js";
+import { shortcutRows } from "./shortcuts.js";
 
 
 function tally(D, qs) {
@@ -315,6 +316,8 @@ export function settingsView(root, applyTheme) {
     <div class="card pad">
       <div class="setting"><div><b>Theme</b><div class="hint">Follows your device by default.</div></div>
         <div class="seg" id="theme">${[["dark", "Dark"], ["light", "Light"], ["auto", "System"]].map(([v, l]) => `<button data-v="${v}" class="${th === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
+      <div class="setting" style="align-items:flex-start"><div><b>Keyboard shortcuts</b><div class="hint">On the Practice page. Press <kbd>?</kbd> anywhere to see this list.</div></div>
+        <table class="table" style="max-width:420px"><tbody>${shortcutRows()}</tbody></table></div>
       <div class="setting"><div><b>Saved photos</b><div class="hint" id="photo-info">Checking…</div></div></div>
       <div class="setting"><div><b>Download backup</b><div class="hint">Saves attempts, bookmarks, notes and note photos as a JSON file (photos can make it large).</div></div><button class="btn" id="exp">Download</button></div>
       <div class="setting"><div><b>Restore backup</b><div class="hint">Merge keeps the most recent attempt per question. Replace discards what is here now.</div></div>
