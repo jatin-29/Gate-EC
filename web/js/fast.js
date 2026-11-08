@@ -35,7 +35,7 @@ export function fastView(root, D, params) {
     const recent = store.fastSessions().filter((x) => x.branch === b).slice(-5).reverse();
     root.innerHTML = `
       <h1 class="page-title">⚡ Fast track · GATE ${b.toUpperCase()}</h1>
-      <p class="page-sub">Race the clock: a timer per question, answers lock in as you press, and the next question comes up on its own. Built for building speed.</p>
+      <p class="page-sub">Race the clock: a timer per question, answers lock in as you press, and the next question comes up on its own. Built for building speed. Answers here are practice only: they do not change your solved / wrong / bookmark progress or streak.</p>
       <div class="fast-setup">
         <div class="card pad">
           <h3>What to practise</h3>
@@ -178,7 +178,6 @@ export function fastView(root, D, params) {
       const given = q.t === "nat" ? $("#f-nat", root).value : q.t === "msq" ? [...sel].sort() : [...sel][0];
       if (q.t === "nat" ? !String(given).trim() : !sel.size) return;
       const ok = checkAnswer(q, given);
-      store.record(q.id, ok, given);
       finishQuestion(ok ? "correct" : "wrong", given);
     }
     const skip = () => { if (!locked) finishQuestion("skipped", "skip"); else advance(); };
